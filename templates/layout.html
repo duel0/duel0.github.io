@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta name="author" content="Francesco Balassone">
+  <link rel="canonical" href="{{canonical}}">
+  <meta property="og:title" content="{{title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:type" content="{{ogType}}">
+  <meta property="og:url" content="{{canonical}}">
+  <meta property="og:image" content="{{ogImage}}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ogImage}}">
+  <meta name="theme-color" content="#121211">
+  <link rel="icon" href="{{root}}favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Balassone — Blog" href="{{root}}feed.xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{root}}assets/style.css">
+  <script>
+    // Arriving through a cross-document view transition: draw covers complete so the morph lands on a finished picture.
+    const quiet = (vt) => { vt?.ready?.catch(() => {}); vt?.finished?.catch(() => {}); };   // aborted transitions are harmless
+    addEventListener('pagereveal', (e) => { if (e.viewTransition) { document.documentElement.dataset.vt = '1'; quiet(e.viewTransition); } });
+    addEventListener('pageswap', (e) => quiet(e.viewTransition));
+  </script>
+</head>
+<body id="top">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{root}}" aria-label="Francesco Balassone, home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 27V5h9"/><path d="M9 15h6"/><path d="M15 15h3.5a6 6 0 0 1 0 12H9"/><path class="dim" d="M18 5a5 5 0 0 1 0 10"/><circle class="node" cx="24" cy="21" r="1.9"/></svg></span>
+        <span class="brand-name">Francesco <i>Balassone</i></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="{{root}}#research" data-key="r"><kbd>R</kbd>esearch</a>
+        <a href="{{root}}#publications" data-key="p"><kbd>P</kbd>apers</a>
+        <a href="{{root}}blog/" data-key="b" aria-current="page"><kbd>B</kbd>log</a>
+        <a href="{{root}}#about" data-key="a"><kbd>A</kbd>bout</a>
+        <a href="{{root}}#contact" data-key="c"><kbd>C</kbd>ontact</a>
+        <button class="theme-toggle term-toggle" type="button" data-key="t" data-console aria-label="Open terminal">
+          <kbd>T</kbd><span class="theme-label">erminal</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+{{content}}
+  </main>
+
+  <footer class="site-footer wrap mono">
+    <span>© <span id="year">2026</span> Francesco Balassone</span>
+    <span class="footer-hint"><a href="{{root}}feed.xml">RSS</a> · <a class="shell-hint" href="#" data-console><kbd>T</kbd> terminal</a></span>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script src="{{root}}assets/main.js" defer></script>
+  <script src="{{root}}assets/graphics.js" defer></script>
+  <script src="{{root}}assets/fx.js" defer></script>
+</body>
+</html>

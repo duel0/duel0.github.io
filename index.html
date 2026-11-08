@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Francesco Balassone — AI Cybersecurity Researcher</title>
+  <meta name="description" content="Francesco Balassone — AI Security Research Lead at CYBER RANGES and PhD student at the University of Naples Federico II. Research on agentic offensive security, adversary emulation and cybersecurity AI evaluation.">
+  <meta name="author" content="Francesco Balassone">
+  <meta property="og:title" content="Francesco Balassone — AI Cybersecurity Researcher">
+  <meta property="og:description" content="Agentic offensive security, adversary emulation and the evaluation of cybersecurity AI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://duel0.github.io/">
+  <meta property="og:image" content="https://duel0.github.io/assets/og/site.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://duel0.github.io/assets/og/site.png">
+  <meta name="theme-color" content="#121211">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="Francesco Balassone — Blog" href="feed.xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <script>
+    // Apply saved theme before paint to avoid a flash.
+    // Arriving through a cross-document view transition: draw covers complete so the morph lands on a finished picture.
+    const quiet = (vt) => { vt?.ready?.catch(() => {}); vt?.finished?.catch(() => {}); };   // aborted transitions are harmless
+    addEventListener('pagereveal', (e) => { if (e.viewTransition) { document.documentElement.dataset.vt = '1'; quiet(e.viewTransition); } });
+    addEventListener('pageswap', (e) => quiet(e.viewTransition));
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Francesco Balassone",
+    "jobTitle": "AI Security Research Lead",
+    "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Naples Federico II" },
+    "worksFor": { "@type": "Organization", "name": "CYBER RANGES" },
+    "affiliation": { "@type": "CollegeOrUniversity", "name": "University of Naples Federico II" },
+    "address": { "@type": "PostalAddress", "addressLocality": "Naples", "addressCountry": "IT" },
+    "sameAs": [
+      "https://www.linkedin.com/in/francesco-balassone/",
+      "https://github.com/duel0",
+      "https://scholar.google.com/citations?user=uGcv2pcAAAAJ",
+      "https://x.com/0xduel0"
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="Francesco Balassone, home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 27V5h9"/><path d="M9 15h6"/><path d="M15 15h3.5a6 6 0 0 1 0 12H9"/><path class="dim" d="M18 5a5 5 0 0 1 0 10"/><circle class="node" cx="24" cy="21" r="1.9"/></svg></span>
+        <span class="brand-name">Francesco <i>Balassone</i></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#research" data-key="r"><kbd>R</kbd>esearch</a>
+        <a href="#publications" data-key="p"><kbd>P</kbd>apers</a>
+        <a href="#highlights" data-key="h"><kbd>H</kbd>ighlights</a>
+        <a href="blog/" data-key="b"><kbd>B</kbd>log</a>
+        <a href="#about" data-key="a"><kbd>A</kbd>bout</a>
+        <a href="#contact" data-key="c"><kbd>C</kbd>ontact</a>
+        <button class="theme-toggle term-toggle" type="button" data-key="t" data-console aria-label="Open terminal">
+          <kbd>T</kbd><span class="theme-label">erminal</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ───────────── HERO ───────────── -->
+    <section class="hero wrap" id="top">
+
+      <div class="hero-meta mono">
+        <span>Naples, IT</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>40.85°N 14.27°E</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span class="status"><i aria-hidden="true"></i>researching</span>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="hero-id"><span class="brand-mark hero-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 27V5h9"/><path d="M9 15h6"/><path d="M15 15h3.5a6 6 0 0 1 0 12H9"/><path class="dim" d="M18 5a5 5 0 0 1 0 10"/><circle class="node" cx="24" cy="21" r="1.9"/></svg></span><span class="hero-name">Francesco <i>Balassone</i></span></p>
+          <p class="eyebrow mono">AI Security Research Lead @ CYBER RANGES · PhD @ Federico II</p>
+          <h1 class="display">
+            Teaching machines to <em>attack</em>,<br>
+            so we learn how to <em>defend</em>.
+          </h1>
+        </div>
+        <div class="hero-side">
+          <figure class="card-fig hero-fig">
+            <canvas data-fig="network" data-seed="11" data-loop aria-hidden="true"></canvas>
+            <figcaption class="mono"><span>FIG. 00</span><span>entry → lateral → contained</span></figcaption>
+          </figure>
+          <p class="lede">
+            I'm Francesco, an AI cybersecurity researcher. I build and evaluate offensive and defensive
+            AI agents that hack, defend and emulate real adversaries — for military, government and enterprise.
+          </p>
+          <p class="actions">
+            <a class="btn btn-solid" href="#publications">Read the research <span aria-hidden="true">→</span></a>
+            <a class="btn" href="#contact">Get in touch</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="affil">
+        <ul class="logos" aria-label="Current affiliations">
+          <li><a href="https://www.cyberranges.com" target="_blank" rel="noopener" title="CYBER RANGES — AI Security Research Lead"><img class="logo-cr" src="assets/logos/cyber-ranges.png" alt="CYBER RANGES" width="768" height="138"></a></li>
+          <li><a class="logo-napwnli" href="https://napwn.li" target="_blank" rel="noopener" title="napwnli — Co-Founder &amp; Captain"><img src="assets/team/napwnli-sm.webp" alt="" width="160" height="191"><span>NAPWNLI</span></a></li>
+          <li><a href="https://www.unina.it" target="_blank" rel="noopener" title="University of Naples Federico II — PhD Student"><img class="logo-unina" src="assets/logos/unina.png" alt="University of Naples Federico II" width="340" height="100"></a></li>
+        </ul>
+        <p class="logos-former"><span class="mono">Formerly at</span><a href="https://aliasrobotics.com" target="_blank" rel="noopener" title="Alias Robotics — AI Cybersecurity Researcher"><img class="logo-alias" src="assets/logos/alias-robotics.svg" alt="Alias Robotics" width="755" height="85"></a></p>
+      </div>
+
+      <figure class="scene" aria-label="Animated wireframe of a network, left to right: an attacker host, home router, internet, edge router, external firewall, DMZ, internal firewall, user and server subnets, and a SOC stack. An Offensive Agent moves through the network until a Defensive Agent detects and contains it.">
+        <canvas id="scene"></canvas>
+        <span class="scene-tag mono">FIG. 01 — Offensive Agent vs Defensive Agent</span>
+        <span class="scene-hint mono">click a machine for its logs · drag to rotate</span>
+      </figure>
+      <div class="scene-ctrl">
+        <button type="button" class="scene-play mono" id="scene-play" aria-pressed="false">❚❚ Pause</button>
+        <ol class="stages mono" id="stages" aria-label="Attack stages — select one to jump to it"></ol>
+      </div>
+      <p class="scene-caption" id="scene-caption">An Offensive Agent moves through a network from left to right; a Defensive Agent detects and contains it.</p>
+    </section>
+
+    <!-- ───────────── 01 RESEARCH ───────────── -->
+    <section class="section wrap" id="research">
+      <header class="section-head">
+        <span class="section-num mono">01</span>
+        <h2 class="section-title">Research</h2>
+        <p class="section-sub">Where offensive security meets autonomous agents.</p>
+      </header>
+
+      <div class="lab">
+        <div class="lab-text">
+          <p class="lab-kicker mono">Home lab</p>
+          <p class="lab-lead">I'm a PhD student at <strong>ARCLAB</strong>, in the Department of Electrical Engineering and Information Technology (<strong>DIETI</strong>) of the University of Naples Federico II.</p>
+          <p>Inside ARCLAB we run <strong class="lab-dark">DARKLAB</strong>, the lab's cybersecurity branch — offensive and defensive AI, adversary emulation and CTFs, a few steps from the Maradona stadium in Fuorigrotta.</p>
+        </div>
+        <figure class="card-fig lab-fig">
+          <canvas data-fig="campus" data-seed="1926" aria-hidden="true"></canvas>
+          <figcaption class="mono"><span>FIG. 02</span><span>ARCLAB · DARKLAB, inside DIETI — Via Claudio, next to the Maradona</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <figure class="card-fig">
+            <canvas data-fig="offense" aria-hidden="true"></canvas>
+            <figcaption class="mono"><span>FIG. 02a</span><span>▲ initial-access vectors → target</span></figcaption>
+          </figure>
+          <span class="card-tag mono">A — Offense</span>
+          <h3>Agentic offensive security</h3>
+          <p>
+            Offensive agents that plan and execute real attack chains — ranking #1 among AI teams in
+            security CTFs, competing in Attack/Defense battlegrounds and testing real systems, from OT
+            networks to consumer robots.
+          </p>
+          <ul class="card-refs mono">
+            <li><a href="https://arxiv.org/abs/2504.06017" target="_blank" rel="noopener">CAI ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2512.02654" target="_blank" rel="noopener">Top CTF agent ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2511.05119" target="_blank" rel="noopener">Dragos OT CTF ↗</a></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <figure class="card-fig">
+            <canvas data-fig="adversary" aria-hidden="true"></canvas>
+            <figcaption class="mono"><span>FIG. 02b</span><span>● APT trails · ┄ synthetic copy</span></figcaption>
+          </figure>
+          <span class="card-tag mono">B — Adversaries</span>
+          <h3>Adversary emulation &amp; attribution</h3>
+          <p>
+            AI agents configured as real APT groups — APT28, APT29, APT41, APT44, Lazarus —
+            raise a hard question: if anyone can emulate a playbook, do TTPs still tell us who attacked?
+          </p>
+          <ul class="card-refs mono">
+            <li><a href="https://arxiv.org/abs/2606.07158" target="_blank" rel="noopener">Synthetic APTs ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2601.05887" target="_blank" rel="noopener">Game-theoretic AI ↗</a></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <figure class="card-fig">
+            <canvas data-fig="evaluation" aria-hidden="true"></canvas>
+            <figcaption class="mono"><span>FIG. 02c</span><span>■ flags captured across the range</span></figcaption>
+          </figure>
+          <span class="card-tag mono">C — Evaluation</span>
+          <h3>Benchmarks &amp; cyber ranges</h3>
+          <p>
+            Static benchmarks saturate. I work on harder yardsticks: meta-benchmarks, harness
+            comparisons and <em>Dynamic Cyber Ranges</em> where LLM defenders fight back in real time.
+          </p>
+          <ul class="card-refs mono">
+            <li><a href="https://arxiv.org/abs/2510.24317" target="_blank" rel="noopener">CAIBench ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2604.24184" target="_blank" rel="noopener">Dynamic Cyber Ranges ↗</a></li>
+            <li><a href="https://arxiv.org/abs/2605.28334" target="_blank" rel="noopener">CSI harness ↗</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ───────────── 02 PUBLICATIONS ───────────── -->
+    <section class="section wrap" id="publications">
+      <header class="section-head">
+        <span class="section-num mono">02</span>
+        <h2 class="section-title">Publications</h2>
+        <div class="filter mono" role="group" aria-label="Filter publications">
+          <button type="button" class="is-active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="first" aria-pressed="false">First author</button>
+        </div>
+      </header>
+
+      <!-- Featured -->
+      <article class="featured">
+        <div class="featured-main">
+        <div class="featured-meta mono">
+          <span>Featured · First author</span>
+          <span>AAAI-26 · AICS Workshop</span>
+        </div>
+        <h3 class="featured-title">
+          <a href="https://arxiv.org/abs/2510.17521" target="_blank" rel="noopener">
+            Cybersecurity AI: Evaluating Agentic Cybersecurity in Attack/Defense CTFs
+          </a>
+        </h3>
+        <p>
+          Are AI agents better at attacking or defending? Across 23 Attack/Defense CTF battlegrounds,
+          defensive agents patched far more often than offensive agents gained initial access
+          (54.3% vs 28.3%) — but the advantage vanished once defenders had to keep services up
+          and stop <em>every</em> intrusion.
+        </p>
+        </div>
+          <figure class="terminal" aria-label="Illustrative agent trace">
+            <div class="terminal-bar mono">
+              <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span>agent@range:~</span>
+              <span class="terminal-tag">FIG. 03</span>
+            </div>
+            <pre class="terminal-body mono" id="trace" aria-hidden="true"></pre>
+            <figcaption class="mono">Offensive and defensive agents, same range, same clock.</figcaption>
+          </figure>
+        <div class="featured-figs mono" aria-hidden="true">
+          <div><span>Patching (unconstrained)</span><b style="--v:54.3">54.3%</b></div>
+          <div><span>Initial access</span><b style="--v:28.3">28.3%</b></div>
+          <div><span>Defense w/ availability</span><b style="--v:23.9">23.9%</b></div>
+          <div><span>Prevent all intrusions</span><b style="--v:15.2">15.2%</b></div>
+        </div>
+      </article>
+
+      <ol class="pubs" id="pubs">
+        <li data-first="true">
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2606.07158" target="_blank" rel="noopener">Synthetic APTs: the Collapse of TTP-Based Attribution</a>
+            <p class="pub-authors"><b>F. Balassone</b>, V. Mayoral-Vilches, M. Sanz-Gómez, P. Zabalegui-Landa, et al.</p>
+            <p class="pub-venue mono">arXiv:2606.07158</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph-red" data-seed="2696" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2605.28334" target="_blank" rel="noopener">Towards Cybersecurity SuperIntelligence (CSI): What's the best harness for cybersecurity?</a>
+            <p class="pub-authors">V. Mayoral-Vilches, <b>F. Balassone</b>, M. Sanz-Gómez, P. Zabalegui-Landa, et al.</p>
+            <p class="pub-venue mono">arXiv:2605.28334</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="3656" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2604.24184" target="_blank" rel="noopener">Dynamic Cyber Ranges</a>
+            <p class="pub-authors">V. Mayoral-Vilches, M. Sanz-Gómez, <b>F. Balassone</b>, et al.</p>
+            <p class="pub-venue mono">arXiv:2604.24184</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="9209" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2603.08665" target="_blank" rel="noopener">Cybersecurity AI: Hacking Consumer Robots in the AI Era</a>
+            <p class="pub-authors">V. Mayoral-Vilches, U. Ayucar-Carbajo, O. Laflamme, R. Peng, et al.</p>
+            <p class="pub-venue mono">arXiv:2603.08665</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="3393" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2601.14614" target="_blank" rel="noopener">Towards Cybersecurity Superintelligence</a>
+            <p class="pub-authors">V. Mayoral-Vilches, S. Rass, M. Pinzger, E. Gil-Uriarte, et al.</p>
+            <p class="pub-venue mono">Proceedings of the AAAI Symposium Series 9(1)</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="8802" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2026</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2601.05887" target="_blank" rel="noopener">Cybersecurity AI: A Game-Theoretic AI for Guiding Attack and Defense</a>
+            <p class="pub-authors">V. Mayoral-Vilches, M. Sanz-Gómez, <b>F. Balassone</b>, S. Rass, et al.</p>
+            <p class="pub-venue mono">arXiv:2601.05887</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="75" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li data-first="true">
+          <span class="pub-year mono">2025</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2510.17521" target="_blank" rel="noopener">Cybersecurity AI: Evaluating Agentic Cybersecurity in Attack/Defense CTFs</a>
+            <p class="pub-authors"><b>F. Balassone</b>, V. Mayoral-Vilches, S. Rass, M. Pinzger, G. Perrone, et al.</p>
+            <p class="pub-venue mono">AAAI-26 Workshop on AI for Cyber Security (AICS)</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph-red" data-seed="7085" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2025</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2512.02654" target="_blank" rel="noopener">Cybersecurity AI: The World's Top AI Agent for Security Capture-the-Flag (CTF)</a>
+            <p class="pub-authors">V. Mayoral-Vilches, L.J. Navarrete-Lozano, <b>F. Balassone</b>, M. Sanz-Gómez, et al.</p>
+            <p class="pub-venue mono">arXiv:2512.02654</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="2731" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2025</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2511.05119" target="_blank" rel="noopener">Cybersecurity AI in OT: Insights from an AI Top-10 Ranker in the Dragos OT CTF 2025</a>
+            <p class="pub-authors">V. Mayoral-Vilches, L.J. Navarrete-Lozano, <b>F. Balassone</b>, M. Sanz-Gómez, et al.</p>
+            <p class="pub-venue mono">arXiv:2511.05119</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="4926" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2025</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2510.24317" target="_blank" rel="noopener">Cybersecurity AI Benchmark (CAIBench): A Meta-Benchmark for Evaluating Cybersecurity AI Agents</a>
+            <p class="pub-authors">M. Sanz-Gómez, V. Mayoral-Vilches, <b>F. Balassone</b>, L.J. Navarrete-Lozano, et al.</p>
+            <p class="pub-venue mono">AAAI-26 Workshop on Reproducible AI (RAI)</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="3908" data-mini aria-hidden="true"></canvas></div>
+        </li>
+        <li>
+          <span class="pub-year mono">2025</span>
+          <div class="pub-body">
+            <a class="pub-title" href="https://arxiv.org/abs/2504.06017" target="_blank" rel="noopener">CAI: An Open, Bug Bounty-Ready Cybersecurity AI</a>
+            <p class="pub-authors">V. Mayoral-Vilches, L.J. Navarrete-Lozano, M. Sanz-Gómez, L.S. Espejo, et al.</p>
+            <p class="pub-venue mono">AAAI-26 Workshop on AI for Cyber Security (AICS)</p>
+          </div>
+          <div class="pub-thumb"><canvas data-fig="glyph" data-seed="3934" data-mini aria-hidden="true"></canvas></div>
+        </li>
+      </ol>
+
+      <p class="more mono">
+        <a href="https://scholar.google.com/citations?user=uGcv2pcAAAAJ" target="_blank" rel="noopener">Full list on Google Scholar ↗</a>
+      </p>
+    </section>
+
+    <!-- ───────────── 03 HIGHLIGHTS ───────────── -->
+    <section class="section wrap" id="highlights">
+      <header class="section-head">
+        <span class="section-num mono">03</span>
+        <h2 class="section-title">Highlights</h2>
+        <p class="section-sub">Exercises, competitions, talks and awards.</p>
+      </header>
+
+      <ul class="hl">
+        <li>
+          <span class="hl-when mono">Apr 2026</span>
+          <span class="hl-kind mono">Exercise</span>
+          <div class="hl-body">
+            <b>NATO CCDCOE Locked Shields 2026 — AI/ML Specialist (DFIR)</b>
+            <span>Brought Cybersecurity AI into blue-team operations at Spain's Mando Conjunto del Ciberespacio, in one of the world's largest live-fire cyber defence exercises: 4,000+ participants from 41 nations.</span>
+          </div>
+        </li>
+        <li>
+          <span class="hl-when mono">2026</span>
+          <span class="hl-kind mono">Talk</span>
+          <div class="hl-body">
+            <b>ITASEC 2026 — “Cybersecurity AI (CAI): Teaching Machines To Pwn”</b>
+            <span>Presented CAI at Italy's premier cybersecurity conference and co-presented a tutorial.</span>
+          </div>
+        </li>
+        <li>
+          <span class="hl-when mono">2025</span>
+          <span class="hl-kind mono">Award</span>
+          <div class="hl-body">
+            <b>Clusit Thesis Award, 21st edition — 3rd place nationally</b>
+            <span>For the MSc thesis “Cybersecurity AI (CAI): Design and Evaluation of Agentic Cybersecurity in Attack/Defense CTFs”. The research also received remarks from Italian Intelligence through the Office of the Prime Minister for its national security relevance.</span>
+          </div>
+        </li>
+        <li>
+          <span class="hl-when mono">2025</span>
+          <span class="hl-kind mono">CTF</span>
+          <div class="hl-body">
+            <b>#1 AI agent in security CTFs</b>
+            <span>With CAI at Alias Robotics: first place among AI teams at Hack The Box's “AI vs Human” CTF, reconfirmed at HTB's Neurogrid CTF; Top-10 AI ranker at the Dragos OT CTF 2025.</span>
+          </div>
+        </li>
+        <li>
+          <span class="hl-when mono">2025</span>
+          <span class="hl-kind mono">CTF</span>
+          <div class="hl-body">
+            <b>CyberCup.IT 2025 — Junior Winners with napwnli</b>
+            <span>The University of Naples Federico II hacking team I co-founded and captain.</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ───────────── 04 CTF TEAM ───────────── -->
+    <section class="section wrap" id="team">
+      <header class="section-head">
+        <span class="section-num mono">04</span>
+        <h2 class="section-title">CTF team</h2>
+        <p class="section-sub">Co-founder &amp; Captain</p>
+      </header>
+
+      <div class="team">
+        <div class="team-text">
+          <a class="team-brand" href="https://napwn.li" target="_blank" rel="noopener">
+            <picture>
+              <source srcset="assets/team/napwnli-sm.webp 1x, assets/team/napwnli.webp 4x" type="image/webp">
+              <img src="assets/team/napwnli-sm.png" width="88" height="105" alt="napwnli logo: a donkey head">
+            </picture>
+            <span class="team-name">napwnli</span>
+          </a>
+          <p class="team-lead">
+            The competitive hacking team of the <strong>University of Naples Federico II</strong>.
+          </p>
+          <p>
+            napwnli was born in 2024 from the finalists of the Naples team of CyberChallenge.IT. I co-founded it
+            and I captain it: we play CTFs all over the world, learn together, and build a community of people
+            who enjoy hard problems — web, pwn, crypto, reversing and Attack/Defense.
+          </p>
+          <div class="stat-tiles team-stats">
+            <div><b>2024</b><span>founded in Naples</span></div>
+            <div><b>1st</b><span>CyberCup.IT 2025 · Junior</span></div>
+            <div><b>#13</b><span>in Italy on CTFtime · 2026</span></div>
+          </div>
+          <ul class="card-refs mono team-links">
+            <li><a href="https://napwn.li" target="_blank" rel="noopener">napwn.li ↗</a></li>
+            <li><a href="https://ctftime.org/team/308814" target="_blank" rel="noopener">CTFtime ↗</a></li>
+            <li><a href="https://github.com/napwnli" target="_blank" rel="noopener">GitHub ↗</a></li>
+            <li><a href="https://it.linkedin.com/company/napwnli" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+            <li><a href="https://www.instagram.com/napwnli" target="_blank" rel="noopener">Instagram ↗</a></li>
+          </ul>
+        </div>
+        <figure class="card-fig team-fig">
+          <canvas data-fig="ad" data-seed="404" data-loop aria-hidden="true"></canvas>
+          <figcaption class="mono"><span>FIG. 04</span><span>Attack/Defense round · exploits out, patches in</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ───────────── 05 WRITING ───────────── -->
+    <section class="section wrap" id="writing">
+      <header class="section-head">
+        <span class="section-num mono">05</span>
+        <h2 class="section-title">Writing</h2>
+        <p class="section-sub"><a class="mono" href="blog/">All posts →</a></p>
+      </header>
+      <!-- blog:start -->
+      <p class="posts-empty">First posts are on the way.</p>
+      <!-- blog:end -->
+    </section>
+
+    <!-- ───────────── 06 ABOUT ───────────── -->
+    <section class="section wrap" id="about">
+      <header class="section-head">
+        <span class="section-num mono">06</span>
+        <h2 class="section-title">About</h2>
+      </header>
+
+      <div class="about-grid">
+        <div class="about-text">
+          <p class="about-lead">
+            I lead AI security research at <strong>CYBER RANGES</strong> and I'm an industrial PhD student at the
+            <strong>University of Naples Federico II</strong>.
+          </p>
+          <p>
+            At CYBER RANGES I lead AI security research, drills and training programs for military,
+            government and law enforcement. My PhD — <em>“Towards Autonomous Red Teaming: Agentic AI for
+            Offensive Cybersecurity Operations”</em> — is supervised by Profs. Simon Pietro Romano and
+            Gaetano Perrone, in partnership with Alias Robotics and CYBER RANGES.
+          </p>
+          <p>
+            Before that, at <strong>Alias Robotics</strong>, I co-created CAI and led research on agentic AI for
+            offense and defense: from Jeopardy CTFs to full Attack/Defense competitions, synthetic APT
+            campaigns and production-like cyber ranges.
+          </p>
+          <p>
+            Before the papers there were CTFs. I co-founded and captain <a href="#team"><strong>napwnli</strong></a>, and I've gone
+            from CyberChallenge.IT student to instructor — still the best way I know to learn how systems break.
+          </p>
+          <blockquote class="pull">
+            “TL;DR I like computers. I'm not sure they like me…”
+          </blockquote>
+        </div>
+
+        <div class="about-side">
+          <h3 class="side-label mono">Experience</h3>
+          <ol class="timeline">
+            <li>
+              <span class="tl-when mono">2026 —</span>
+              <div><b>AI Security Research Lead</b><span>CYBER RANGES</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2026</span>
+              <div><b>AI/ML Specialist — DFIR</b><span>NATO CCDCOE · Locked Shields</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2025–26</span>
+              <div><b>AI Cybersecurity Researcher — Offensive Security</b><span>Alias Robotics</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2025</span>
+              <div><b>AI Cybersecurity Research Intern</b><span>Alias Robotics</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2024 —</span>
+              <div><b>Co-Founder &amp; Captain</b><span>napwnli</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2024 —</span>
+              <div><b>CTF Instructor</b><span>CyberChallenge.IT @ UNINA</span></div>
+            </li>
+          </ol>
+
+          <h3 class="side-label mono">Education</h3>
+          <ol class="timeline">
+            <li>
+              <span class="tl-when mono">2025 —</span>
+              <div><b>Industrial PhD, Information Technology &amp; Electrical Engineering</b><span>University of Naples Federico II</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2023–25</span>
+              <div><b>MSc Computer Engineering — Cybersecurity</b><span>110/110 cum laude, special commendation</span></div>
+            </li>
+            <li>
+              <span class="tl-when mono">2020–23</span>
+              <div><b>BSc Computer Engineering</b><span>110/110 cum laude · thesis on vulnerabilities in AI code generators</span></div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <figure class="card-fig places-fig">
+        <canvas data-fig="map" data-seed="1" aria-hidden="true"></canvas>
+        <figcaption class="mono"><span>FIG. 06</span><span>Based in Naples · working with CYBER RANGES (Stafford, VA) · formerly Alias Robotics (Vitoria-Gasteiz)</span></figcaption>
+      </figure>
+
+      <div class="interests mono" aria-label="Interests">
+        <span>Cybersecurity AI</span><span>Agentic Red Teaming</span><span>Adversary Emulation</span>
+        <span>Blue Team Ops</span><span>DFIR</span><span>CTFs</span><span>Cyber Ranges</span><span>OT Security</span>
+      </div>
+    </section>
+
+    <!-- ───────────── 07 CONTACT ───────────── -->
+    <section class="section wrap contact" id="contact">
+      <header class="section-head">
+        <span class="section-num mono">07</span>
+        <h2 class="section-title">Contact</h2>
+      </header>
+      <p class="contact-line display">Let's <em>talk</em> — research, collaborations, CTFs.</p>
+      <ul class="links">
+        <li><a href="https://www.linkedin.com/in/francesco-balassone/" target="_blank" rel="noopener"><span class="mono">01</span>LinkedIn<i aria-hidden="true">↗</i></a></li>
+        <li><a href="https://github.com/duel0" target="_blank" rel="noopener"><span class="mono">02</span>GitHub<i aria-hidden="true">↗</i></a></li>
+        <li><a href="https://scholar.google.com/citations?user=uGcv2pcAAAAJ" target="_blank" rel="noopener"><span class="mono">03</span>Google Scholar<i aria-hidden="true">↗</i></a></li>
+        <li><a href="https://x.com/0xduel0" target="_blank" rel="noopener"><span class="mono">04</span>X / @0xduel0<i aria-hidden="true">↗</i></a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap mono">
+    <span>© <span id="year">2026</span> Francesco Balassone</span>
+    <span class="footer-hint">Press <kbd>R</kbd> <kbd>P</kbd> <kbd>H</kbd> <kbd>B</kbd> <kbd>A</kbd> <kbd>C</kbd> to navigate · <a class="shell-hint" href="#" data-console><kbd>T</kbd> terminal</a></span>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script src="assets/main.js" defer></script>
+  <script src="assets/scene-logs.js" defer></script>
+  <script src="assets/geo-land.js" defer></script>
+  <script src="assets/graphics.js" defer></script>
+  <script src="assets/fx.js" defer></script>
+  <!-- 1/3 · 66 6c 61 67 7b 64 30 6e 6b 33 79 · next: the robots know where not to look. -->
+</body>
+</html>

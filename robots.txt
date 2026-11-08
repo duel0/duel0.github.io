@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# 2/3 isn't meant for crawlers.
+Disallow: /.well-known/d0nk3y.txt

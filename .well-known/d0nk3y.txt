@@ -1,0 +1,6 @@
+ hee-haw.
+
+ 2/3 (base64): X3MzM3M=
+
+ 3/3 lives in the shell: press T on the site.
+ not every file shows up with a plain `ls`.

@@ -1,0 +1,7 @@
+_site/
+.DS_Store
+
+# Drafts stay local (preview with: node build.mjs --drafts --serve)
+content/drafts/
+assets/og/synthetic-apts.png
+assets/og/blocks-reference.png
