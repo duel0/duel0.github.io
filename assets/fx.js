@@ -32,7 +32,6 @@
     const STAGES = [
       ['#research', 'recon'],
       ['#publications', 'weaponize'],
-      ['#highlights', 'deliver'],
       ['#team', 'exploit'],
       ['#writing', 'persist'],
       ['#about', 'escalate'],
