@@ -571,7 +571,11 @@ function stamp(html) {
    site) with headless Chrome into assets/og/. The PNGs are committed, so
    the CI build doesn't need Chrome. Unchanged cards are skipped. */
 const OG_DIR = path.join(ROOT, 'assets', 'og');
-const ogUrl = (key) => (fs.existsSync(path.join(OG_DIR, `${key}.png`)) ? `${SITE.url}/assets/og/${key}.png` : `${SITE.url}/assets/og/site.png`);
+// Versioned URL: platforms cache previews per URL, so a new image gets a new ?v=
+const ogUrl = (key) => {
+  const f = fs.existsSync(path.join(OG_DIR, `${key}.png`)) ? key : 'site';
+  return `${SITE.url}/assets/og/${f}.png?v=${hash(fs.readFileSync(path.join(OG_DIR, `${f}.png`)).toString('latin1')).toString(36)}`;
+};
 
 function findChrome() {
   const candidates = [
@@ -645,6 +649,7 @@ function build() {
   // Home page: latest posts.
   let home = read(path.join(ROOT, 'index.html'));
   home = home.replace(/<!-- blog:start -->[\s\S]*?<!-- blog:end -->/, `<!-- blog:start -->\n      ${feed(posts, '', 3)}\n      <!-- blog:end -->`);
+  home = home.split('https://duel0.github.io/assets/og/site.png').join(ogUrl('site'));
   write(path.join(OUT, 'index.html'), home);
 
   // Blog index.

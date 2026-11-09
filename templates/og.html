@@ -8,7 +8,7 @@
     html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: var(--paper); }
     .og { position: relative; width: 1200px; height: 630px; }
     .og-fig { position: absolute; top: 0; right: 0; width: 760px; height: 630px;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 38%); mask-image: linear-gradient(90deg, transparent 0, #000 38%); }
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); }
     .og-fig canvas { display: block; width: 100%; height: 100%; }
     .og-text { position: absolute; inset: 0; z-index: 2; box-sizing: border-box; padding: 60px 64px 54px;
       display: flex; flex-direction: column; width: 720px; }
@@ -23,12 +23,22 @@
     .og-desc { margin: 20px 0 0; font: 400 24px/1.4 var(--sans); color: var(--ink-2); }
     .og-foot { margin-top: 30px; display: flex; align-items: center; gap: 14px; font: 15px var(--mono); color: var(--ink-3); }
     .og-foot b { width: 40px; height: 1px; background: var(--ink-3); }
+    .og-logos { position: absolute; right: 64px; bottom: 54px; z-index: 3; display: flex; align-items: center; gap: 28px; opacity: .8; }
+    .og-logos img { display: block; width: auto; }
+    .og-logos .cr { height: 30px; } .og-logos .nap { height: 32px; } .og-logos .un { height: 34px; }
+    .og-logos span { font: 400 26px/1 "Napoli", var(--sans); color: #fff; }
+    .og-logos .napwnli { display: flex; align-items: center; gap: 8px; }
     .og-title .h1-cursor { animation: none; }
     .og::after { content: ""; position: absolute; inset: 14px; border: 1px solid var(--line); pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="og">
+    <div class="og-logos" aria-hidden="true">
+      <img class="cr" src="{{root}}assets/logos/cyber-ranges.png">
+      <span class="napwnli"><img class="nap" src="{{root}}assets/team/napwnli-sm.png"><span>NAPWNLI</span></span>
+      <img class="un" src="{{root}}assets/logos/unina.png">
+    </div>
     <div class="og-fig"><canvas data-fig="{{fig}}" data-seed="{{seed}}" data-static aria-hidden="true"></canvas></div>
     <div class="og-text">
       <div class="og-brand">
