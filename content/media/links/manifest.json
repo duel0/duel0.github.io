@@ -1,0 +1,12 @@
+{
+  "https://github.com/duel0": {
+    "title": "duel0 - Overview",
+    "description": "AI Security Research Lead @ CYBER RANGES | PhD Student @unina | CTF Player @napwnli \r\n - duel0",
+    "image": "vhiahr.jpg"
+  },
+  "https://arxiv.org/abs/2606.07158": {
+    "title": "Synthetic APTs: the Collapse of TTP-Based Attribution",
+    "description": "Cyber Threat Intelligence CTI attribution relies on identifying the Tactics, Techniques, and Procedures TTPs that distinguish one threat actor from another. This approach presupposes that each adversary leaves a recognizable operational fingerprint. This work investigates whether AI driven adversary emulation challenges that presupposition. We deploy agents from our Cybersecurity SuperIntelligence CSI framework, configured as five Advanced Persistent Threat APT groups, APT28, APT29, APT41, APT44, and Lazarus Group, against AI driven Defender agents across two cyber ranges provided by CYBER RANGES, equipped with defensive software Wazuh, Velociraptor, Elasticsearch and active AI driven defenders: an enterprise network and a military infrastructure. Across 20 experiments using two defender models, a binary pattern emerges: all 10 Enterprise range experiments resulted in compromise 2 to 12 hosts per experiment, while all 10 Military range experiments were successfully defended or resulted in stalemates, regardless of APT profile or defender model. In 8 of 10 Enterprise experiments, attackers independently weaponized the defender's own Velociraptor endpoint management platform as a command and control channel, a convergent behavior not encoded in any threat intelligence profile. We argue that in the AI era, wherein agents can be deployed provided the right models are available and subject to the right scaffolding and agentic configuration, the entry barrier for operating like a nation state APT collapses: beyond nation states, individuals can now act like commonly identified threat actors, and with it, fundamentally undermine TTP based attribution.",
+    "image": "1nptdc5.png"
+  }
+}

@@ -59,6 +59,12 @@ Start a new post by copying `content/posts/_template.md`.
 
 The latest 3 posts appear automatically in the home page “Writing” section, plus `/blog/` and `/feed.xml`.
 
+## Link previews
+
+`::: bookmark URL` cards show the target page's own preview image, title and description. The build
+fetches them once and caches them in `content/media/links/` (commit that folder). Use
+`node build.mjs --offline` to skip fetching. Delete an entry from `manifest.json` to re-fetch it.
+
 ## Social preview cards
 
 After adding or editing a post, render its 1200×630 card (needs Google Chrome installed locally):

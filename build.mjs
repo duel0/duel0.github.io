@@ -262,10 +262,15 @@ function container(type, arg, body, ctx) {
       return `<div class="stat-tiles">${tiles.join('')}</div>`;
     }
     case 'bookmark': {
-      const [title = arg, desc = ''] = body.trim().split('\n').map((s) => s.trim());
-      return `<a class="bookmark" href="${esc(arg)}" target="_blank" rel="noopener">
-  <span class="bookmark-text"><b>${inline(title)}</b>${desc ? `<span>${inline(desc)}</span>` : ''}<span class="bookmark-url mono">${esc(domainOf(arg))} ↗</span></span>
-  <canvas class="bookmark-art" data-fig="terrain" data-seed="${hash(arg) % 9973 + 1}" data-mini aria-hidden="true"></canvas>
+      const meta = LINKS[arg] || {};
+      const [t0, d0] = body.trim().split('\n').map((s) => s.trim());
+      const title = t0 || meta.title || arg, desc = d0 || meta.description || '';
+      const art = meta.image
+        ? `<span class="bookmark-art bookmark-media"><img src="/${LINK_DIR_URL}/${meta.image}" alt="" loading="lazy"></span>`
+        : `<canvas class="bookmark-art" data-fig="terrain" data-seed="${hash(arg) % 9973 + 1}" data-mini aria-hidden="true"></canvas>`;
+      return `<a class="bookmark${meta.image ? ' has-img' : ''}" href="${esc(arg)}" target="_blank" rel="noopener">
+  <span class="bookmark-text"><b>${inline(esc(title))}</b>${desc ? `<span>${inline(esc(desc))}</span>` : ''}<span class="bookmark-url mono">${esc(domainOf(arg))} ↗</span></span>
+  ${art}
 </a>`;
     }
     case 'figure': {
@@ -496,6 +501,58 @@ function chips(posts) {
       </div>`;
 }
 
+/* ── Link previews ─────────────────────────────────────────────
+   For every `::: bookmark URL` in posts/drafts, fetch the page's
+   og:image / title / description once and cache them in
+   content/media/links/ (committed). Builds then work offline and the
+   site never hotlinks third-party images. */
+const LINK_DIR = path.join(ROOT, 'content', 'media', 'links');
+const LINK_DIR_URL = 'media/links';
+const LINK_MANIFEST = path.join(LINK_DIR, 'manifest.json');
+let LINKS = fs.existsSync(LINK_MANIFEST) ? JSON.parse(fs.readFileSync(LINK_MANIFEST, 'utf8')) : {};
+
+async function fetchLinkPreviews() {
+  const dirs = [POSTS_DIR, path.join(ROOT, 'content', 'drafts')].filter((d) => fs.existsSync(d));
+  const urls = new Set();
+  for (const d of dirs) for (const f of fs.readdirSync(d)) if (f.endsWith('.md')) {
+    for (const m of fs.readFileSync(path.join(d, f), 'utf8').matchAll(/^:::\s*bookmark\s+(\S+)/gm)) urls.add(m[1]);
+  }
+  const todo = [...urls].filter((u) => !LINKS[u]);
+  if (!todo.length) return;
+  fs.mkdirSync(LINK_DIR, { recursive: true });
+  const UA = { 'user-agent': 'Mozilla/5.0 (compatible; duel0-site-build/1.0; +https://duel0.github.io)' };
+  const attr = (html, re) => { const m = html.match(re); return m ? m[1].replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim() : ''; };
+  const metaTag = (html, key) =>
+    attr(html, new RegExp(`<meta[^>]+(?:property|name)=["']${key}["'][^>]*content=["']([^"']+)`, 'i')) ||
+    attr(html, new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["']${key}["']`, 'i'));
+  for (const url of todo) {
+    const entry = {};
+    try {
+      const res = await fetch(url, { headers: UA, redirect: 'follow', signal: AbortSignal.timeout(15000) });
+      const html = (await res.text()).slice(0, 400000);
+      entry.title = metaTag(html, 'og:title') || attr(html, /<title[^>]*>([^<]+)/i);
+      entry.description = metaTag(html, 'og:description') || metaTag(html, 'description');
+      let img = metaTag(html, 'og:image') || metaTag(html, 'twitter:image');
+      if (img) {
+        img = new URL(img, res.url).href;
+        const ir = await fetch(img, { headers: UA, signal: AbortSignal.timeout(15000) });
+        const type = ir.headers.get('content-type') || '';
+        const ext = type.includes('png') ? 'png' : type.includes('webp') ? 'webp' : type.includes('gif') ? 'gif' : 'jpg';
+        const buf = Buffer.from(await ir.arrayBuffer());
+        if (ir.ok && type.startsWith('image/') && buf.length < 3_000_000) {
+          entry.image = `${hash(url).toString(36)}.${ext}`;
+          fs.writeFileSync(path.join(LINK_DIR, entry.image), buf);
+        }
+      }
+      console.log(`links: ${url} → ${entry.image ? 'image ✓' : 'no image'}`);
+    } catch (e) {
+      console.warn(`links: ${url} → failed (${e.message}); using line-art fallback`);
+    }
+    LINKS[url] = entry;
+  }
+  fs.writeFileSync(LINK_MANIFEST, JSON.stringify(LINKS, null, 2));
+}
+
 /* ── Cache busting ─────────────────────────────────────────────
    GitHub Pages caches assets for 10 min; stamp CSS/JS URLs with a
    content hash so a deploy never mixes new HTML with old CSS/JS. */
@@ -535,7 +592,7 @@ async function generateOg(posts) {
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(read(manifestPath)) : {};
   const tplHash = hash(tpl).toString(36);
   const cards = [
-    { key: 'site', kicker: 'AI Security Research Lead · CYBER RANGES', title: 'Teaching machines to <em>attack</em>, so we learn how to <em class="def">defend</em>.', desc: 'Offensive & defensive AI agents, adversary emulation, cyber ranges.', fig: 'network', seed: 11, url: 'duel0.github.io' },
+    { key: 'site', kicker: 'AI Security Research Lead · CYBER RANGES', title: 'Teaching machines to <em>attack</em>, so we learn how to <em class="def">defend</em><span class="h1-cursor"></span>', desc: 'Offensive & defensive AI agents, adversary emulation, cyber ranges.', fig: 'network', seed: 11, url: 'duel0.github.io' },
     ...posts.filter((p) => !p.draft || INCLUDE_DRAFTS).map((p) => ({ key: p.slug, kicker: [p.category, ...p.tags].join(' · '), title: esc(p.title), desc: esc(p.description), fig: p.cover, seed: p.seed, url: `duel0.github.io/blog/${p.slug}` })),
   ];
   const os = await import('node:os');
@@ -685,6 +742,7 @@ ${p.html}
   return posts;
 }
 
+if (!args.has('--offline')) await fetchLinkPreviews();
 const builtPosts = build();
 if (args.has('--og')) await generateOg(builtPosts);
 

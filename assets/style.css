@@ -1174,3 +1174,19 @@ em, i, .display em, .section-title em { font-style: normal; }
 .lab-fig canvas { aspect-ratio: 16 / 8.6; }
 .about-lead.lab-lead, .lab-lead { font-size: clamp(19px, 2.1vw, 26px) !important; line-height: 1.4 !important; }
 .lab-text > p:not(.lab-lead):not(.lab-kicker) { font-size: 17px; }
+
+/* Bookmark with a real preview image */
+.bookmark.has-img { grid-template-columns: minmax(0, 1fr) 220px; }
+.bookmark-media { position: relative; display: block; min-height: 116px; border-left: 1px solid var(--line); overflow: hidden; background: var(--paper-2); }
+.bookmark-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.9); transition: filter .2s, transform .4s; }
+.bookmark.has-img:hover .bookmark-media img { filter: none; transform: scale(1.03); }
+@media (max-width: 600px) { .bookmark.has-img { grid-template-columns: minmax(0, 1fr); } .bookmark-media { order: -1; border-left: 0; border-bottom: 1px solid var(--line); aspect-ratio: 1.91 / 1; } }
+
+/* Headline: blinking block cursor instead of the full stop */
+.h1-cursor {
+  display: inline-block; width: .52em; height: .82em; margin-left: .12em; vertical-align: -0.06em;
+  background: var(--ink); animation: blink 1.06s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) { .h1-cursor { animation: none; } }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.bookmark-text > span:not(.bookmark-url) { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
