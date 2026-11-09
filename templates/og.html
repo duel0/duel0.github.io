@@ -8,7 +8,7 @@
     html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: var(--paper); }
     .og { position: relative; width: 1200px; height: 630px; }
     .og-fig { position: absolute; top: 0; right: 0; width: 760px; height: 630px;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); }
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 12%, #000 40%); mask-image: linear-gradient(90deg, transparent 0, transparent 12%, #000 40%); }
     .og-fig canvas { display: block; width: 100%; height: 100%; }
     .og-text { position: absolute; inset: 0 auto 0 0; z-index: 2; box-sizing: border-box; padding: 40px 64px 96px;
       display: flex; flex-direction: column; justify-content: center; width: 620px; }
@@ -38,12 +38,7 @@
 </head>
 <body>
   <div class="og">
-    <div class="og-logos" aria-hidden="true">
-      <img class="cr" src="{{root}}assets/logos/cyber-ranges.png">
-      <span class="napwnli"><img class="nap" src="{{root}}assets/team/napwnli-sm.png"><span>NAPWNLI</span></span>
-      <img class="un" src="{{root}}assets/logos/unina.png">
-    </div>
-    {{figure}}
+{{logos}}    {{figure}}
     <div class="og-text">
       <div class="og-brand">
         <svg viewBox="0 0 32 32"><path d="M9 27V5h9"/><path d="M9 15h6"/><path d="M15 15h3.5a6 6 0 0 1 0 12H9"/><path class="dim" d="M18 5a5 5 0 0 1 0 10"/><circle class="node" cx="24" cy="21" r="1.9"/></svg>

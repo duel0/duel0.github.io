@@ -586,6 +586,12 @@ function findChrome() {
   return candidates.find((c) => fs.existsSync(c));
 }
 
+const OG_LOGOS = `    <div class="og-logos" aria-hidden="true">
+      <img class="cr" src="{{root}}assets/logos/cyber-ranges.png">
+      <span class="napwnli"><img class="nap" src="{{root}}assets/team/napwnli-sm.png"><span>NAPWNLI</span></span>
+      <img class="un" src="{{root}}assets/logos/unina.png">
+    </div>
+`;
 async function generateOg(posts) {
   const chrome = findChrome();
   if (!chrome) { console.warn('og: Chrome not found — skipping social cards'); return; }
@@ -610,7 +616,8 @@ async function generateOg(posts) {
     const figure = c.key === 'site'
       ? '<div class="og-scene"><canvas id="scene" data-static data-quiet aria-hidden="true"></canvas></div>'
       : `<div class="og-fig"><canvas data-fig="${c.fig}" data-seed="${c.seed}" data-static aria-hidden="true"></canvas></div>`;
-    write(html, fill(tpl, { root: `file://${ROOT}/`, ...c, kicker: esc(c.kicker), figure }));
+    const logos = c.key === 'site' ? OG_LOGOS : '';
+    write(html, fill(tpl, { root: `file://${ROOT}/`, ...c, kicker: esc(c.kicker), figure, logos: fill(logos, { root: `file://${ROOT}/` }) }));
     const { mkdtempSync } = fs;
     for (let attempt = 0; attempt < 3; attempt++) {
       const profile = mkdtempSync(path.join(os.tmpdir(), 'og-chrome-'));
