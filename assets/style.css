@@ -1293,7 +1293,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .team-honours { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .team-honours .team-proud { margin: 0; }
 .armband {
-  flex: none; display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 16px;
+  flex: none; display: flex; align-items: center; gap: 16px; height: 66px; padding: 0 22px;
   background: #fff; border-radius: 3px; position: relative;
   box-shadow: inset 0 5px 0 -1px var(--accent), inset 0 -5px 0 -1px var(--accent), 0 8px 20px -8px rgba(0,0,0,.5);
 }
@@ -1302,10 +1302,12 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
   background: repeating-linear-gradient(0deg, color-mix(in oklab, var(--accent) 70%, transparent) 0 2px, transparent 2px 4px);
 }
 .armband::before { left: 5px; } .armband::after { right: 5px; }
-.ab-c { font: 400 46px/1 "Napoli", var(--sans); color: var(--accent); text-box: trim-both cap alphabetic; }
-.ab-sep { width: 1.5px; height: 32px; background: color-mix(in oklab, var(--accent) 55%, transparent); }
-.armband img { display: block; height: 40px; width: auto; }
-.armband img[src*="cybercup"] { height: 36px; margin-left: -5px; margin-right: 3px; }
+.ab-c { font: 400 50px/1 "Napoli", var(--sans); color: var(--accent); text-box: trim-both cap alphabetic; }
+.ab-sep { width: 1.5px; height: 34px; background: color-mix(in oklab, var(--accent) 55%, transparent); }
+.armband img { display: block; height: 34px; width: auto; }
+/* same visible height (34px) and equal visible gaps: the emblem file has ~9% transparent padding */
+.armband img[src*="cyberchallenge"] { height: 37px; margin: 0 -3px; }
+.armband img[src*="napwnli"] { height: 34px !important; width: auto !important; filter: drop-shadow(0 0 0.6px rgba(19,41,75,.6)); }
 .armband img[src*="napwnli"] { height: 38px; filter: drop-shadow(0 0 0.6px rgba(19,41,75,.6)); }   /* sticker edge visible on white */   /* matches the emblem's visible height (it has padding) */
 .armband img[src*="cyberchallenge"] { filter: brightness(0) saturate(100%) invert(13%) sepia(36%) saturate(2400%) hue-rotate(196deg); }   /* navy on azzurro */
 @media (max-width: 900px) { .team-honours { flex-direction: column-reverse; align-items: flex-start; } }
