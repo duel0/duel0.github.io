@@ -1319,3 +1319,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .team-uni i { width: 2px; height: clamp(48px, 5.6vw, 72px); background: color-mix(in oklab, var(--accent) 60%, transparent); }
 .team-uni img { display: block; height: clamp(46px, 5.4vw, 68px); width: auto; }
 @media (max-width: 600px) { .team-head { gap: 14px; } .team-uni { gap: 14px; } }
+
+/* About: organisation links read as highlighted names, underline on hover */
+.about-text a { color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent); text-underline-offset: 3px; }
+.about-text a:hover { color: var(--accent); text-decoration-color: var(--accent); }
