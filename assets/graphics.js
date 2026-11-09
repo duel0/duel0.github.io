@@ -1375,100 +1375,6 @@
       if (ap > 0.98) places.forEach((pl) => { const q = pin(pl.at, pl.color, false); two(q[0], q[1], pl.name, pl.sub, pl.color, pl.at[0] < -40 ? 1 : -1, pl.at[0] < -40 ? 30 : 46); });
     },
 
-    // N — DARKLAB: isometric wireframe of the DIETI campus on Via Claudio, next to the Maradona stadium.
-    campus(ctx, w, h, p) {
-      const s = Math.min(w / 370, h / 250), c = Math.cos(Math.PI / 6), si = Math.sin(Math.PI / 6);
-      const cx = w * 0.5, cy = h * 0.53;
-      const I = (x, y, z = 0) => [cx + (x - y) * c * s, cy + (x + y) * si * s - z * s];
-      const mv = (q) => ctx.moveTo(q[0], q[1]), ln = (q) => ctx.lineTo(q[0], q[1]);
-      const reveal = (i, n) => clamp(p * 1.25 * n - i, 0, 1);       // staggered draw-on
-      // Ground grid.
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 0.5; ctx.globalAlpha = 0.08; ctx.beginPath();
-      for (let x = -150; x <= 150; x += 15) { mv(I(x, -130)); ln(I(x, 130)); }
-      for (let y = -130; y <= 130; y += 15) { mv(I(-150, y)); ln(I(150, y)); }
-      ctx.stroke();
-      // Via Claudio (between campus and stadium).
-      ctx.globalAlpha = 0.45; ctx.lineWidth = 0.8; ctx.beginPath();
-      mv(I(-150, -18)); ln(I(150, -18)); mv(I(-150, -6)); ln(I(150, -6)); ctx.stroke();
-      ctx.setLineDash([5, 6]); ctx.globalAlpha = 0.3; ctx.beginPath(); mv(I(-150, -12)); ln(I(150, -12)); ctx.stroke(); ctx.setLineDash([]);
-      // Campus blocks (north side of the road). [x, y, w, d, h, id]
-      const blocks = [
-        [-120, -70, 34, 30, 16], [-80, -78, 28, 40, 26], [-42, -66, 36, 26, 20], [-2, -80, 30, 44, 36, 'dieti'],
-        [36, -70, 40, 30, 14], [80, -84, 26, 52, 22], [-100, -112, 50, 22, 10], [20, -116, 46, 20, 12],
-      ].sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
-      const box = (x, y, bw, bd, bh, k, hot, band) => {
-        const x1 = x + bw, y1 = y + bd;
-        const top = [I(x, y, bh), I(x1, y, bh), I(x1, y1, bh), I(x, y1, bh)];
-        const right = [I(x1, y, 0), I(x1, y1, 0), I(x1, y1, bh), I(x1, y, bh)];
-        const front = [I(x, y1, 0), I(x1, y1, 0), I(x1, y1, bh), I(x, y1, bh)];
-        ctx.globalAlpha = k; ctx.fillStyle = C.paper;
-        [top, right, front].forEach((f) => { ctx.beginPath(); f.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); ctx.fill(); });
-        if (hot) { ctx.globalAlpha = 0.18 * k; ctx.fillStyle = C.accent; [top, right, front].forEach((f) => { ctx.beginPath(); f.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); ctx.fill(); }); }
-        ctx.globalAlpha = k * (hot ? 1 : 0.85); ctx.strokeStyle = hot ? C.accent : C.ink; ctx.lineWidth = hot ? 1.3 : 0.9;
-        ctx.beginPath(); [top, right, front].forEach((f) => { f.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); }); ctx.stroke();
-        // floors
-        ctx.globalAlpha = k * 0.35; ctx.lineWidth = 0.6; ctx.beginPath();
-        for (let z = 6; z < bh; z += 6) { mv(I(x1, y, z)); ln(I(x1, y1, z)); ln(I(x, y1, z)); }
-        ctx.stroke();
-        if (band) {                                         // the lab: one floor of the building, in red
-          const [z0, z1] = band, faces = [
-            [I(x1, y, z0), I(x1, y1, z0), I(x1, y1, z1), I(x1, y, z1)],
-            [I(x, y1, z0), I(x1, y1, z0), I(x1, y1, z1), I(x, y1, z1)],
-          ];
-          ctx.globalAlpha = 0.28 * k; ctx.fillStyle = C.accent;
-          faces.forEach((f) => { ctx.beginPath(); f.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); ctx.fill(); });
-          ctx.globalAlpha = k; ctx.strokeStyle = C.accent; ctx.lineWidth = 1.3;
-          ctx.beginPath(); faces.forEach((f) => { f.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); }); ctx.stroke();
-          // window slits
-          ctx.globalAlpha = 0.7 * k; ctx.lineWidth = 0.8; ctx.beginPath();
-          for (let t = 4; t < bw - 2; t += 5) { mv(I(x + t, y1, z0 + 1.5)); ln(I(x + t, y1, z1 - 1.5)); }
-          for (let t = 4; t < bd - 2; t += 5) { mv(I(x1, y + t, z0 + 1.5)); ln(I(x1, y + t, z1 - 1.5)); }
-          ctx.stroke();
-          return { top: I(x + bw / 2, y + bd / 2, bh), lab: I(x1, y1, (z0 + z1) / 2) };
-        }
-        return { top: I(x + bw / 2, y + bd / 2, bh) };
-      };
-      let dieti = null;
-      blocks.forEach((b, i) => { const t = box(b[0], b[1], b[2], b[3], b[4], reveal(i, blocks.length + 4), false, b[5] === 'dieti' ? [30, 36] : null); if (b[5] === 'dieti') dieti = t; });
-      // Stadio Diego Armando Maradona (south side): stands as two rings + radial seating.
-      const k = reveal(blocks.length, blocks.length + 4), S0 = [10, 62];
-      const ring = (rx, ry, z, a0 = 0, a1 = Math.PI * 2) => { ctx.beginPath(); for (let a = a0, i = 0; a <= a1 + 1e-6; a += Math.PI / 48, i++) { const q = I(S0[0] + Math.cos(a) * rx, S0[1] + Math.sin(a) * ry, z); i ? ln(q) : mv(q); } ctx.stroke(); };
-      if (k > 0) {
-        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.9;
-        ctx.globalAlpha = 0.85 * k; ring(78, 56, 0); ring(78, 56, 18); ring(50, 32, 5);
-        ctx.globalAlpha = 0.4 * k; ctx.beginPath();
-        for (let a = 0; a < Math.PI * 2; a += Math.PI / 24) {
-          mv(I(S0[0] + Math.cos(a) * 78, S0[1] + Math.sin(a) * 56, 0)); ln(I(S0[0] + Math.cos(a) * 78, S0[1] + Math.sin(a) * 56, 18));
-          ln(I(S0[0] + Math.cos(a) * 50, S0[1] + Math.sin(a) * 32, 5));
-        }
-        ctx.stroke();
-        ctx.globalAlpha = 0.25 * k; ring(64, 44, 11.5);
-        // Pitch.
-        const kp = reveal(blocks.length + 1, blocks.length + 4);
-        ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.8 * kp; ctx.lineWidth = 0.9; ctx.beginPath();
-        const px0 = S0[0] - 34, px1 = S0[0] + 34, py0 = S0[1] - 20, py1 = S0[1] + 20;
-        [I(px0, py0), I(px1, py0), I(px1, py1), I(px0, py1)].forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath();
-        mv(I(S0[0], py0)); ln(I(S0[0], py1));
-        ctx.stroke();
-        ctx.beginPath(); for (let a = 0, i = 0; a <= Math.PI * 2 + 1e-6; a += Math.PI / 24, i++) { const q = I(S0[0] + Math.cos(a) * 7, S0[1] + Math.sin(a) * 7); i ? ln(q) : mv(q); } ctx.stroke();
-        [[px0, 8], [px1, -8]].forEach(([bx, d]) => { ctx.beginPath(); [I(bx, S0[1] - 9), I(bx + d, S0[1] - 9), I(bx + d, S0[1] + 9), I(bx, S0[1] + 9)].forEach((q, i) => (i ? ln(q) : mv(q))); ctx.stroke(); });
-      }
-      // Labels.
-      const kl = reveal(blocks.length + 2, blocks.length + 4);
-      if (kl > 0.5) {
-        if (dieti) label(ctx, dieti.lab[0], dieti.lab[1], 'ARCLAB · DARKLAB', 1, C.accent, true, -26);
-        const st = I(S0[0] - 14, S0[1] + 55, 0); label(ctx, st[0], st[1], 'Stadio Diego Armando Maradona', 1, C.ink2, true, -22);
-        const rd = I(130, -12); label(ctx, rd[0], rd[1], 'Via Claudio', 1, C.ink3, false, 10);
-        if (dieti) label(ctx, dieti.top[0], dieti.top[1], 'DIETI · UniNA', 1, C.ink2, true, 26);
-        if (!MINI && w >= 480) {
-          ctx.globalAlpha = 0.8; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-          ctx.fillText('FUORIGROTTA · NAPOLI · 40.82°N 14.19°E', 14, h - 22);
-          ctx.textAlign = 'right'; ctx.fillText('schematic · not to scale', w - 14, h - 22);
-          const n0 = [w - 30, 30]; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(n0[0], n0[1] + 12); ctx.lineTo(n0[0], n0[1] - 8); ctx.lineTo(n0[0] - 4, n0[1] - 2); ctx.moveTo(n0[0], n0[1] - 8); ctx.lineTo(n0[0] + 4, n0[1] - 2); ctx.stroke();
-          ctx.textAlign = 'center'; ctx.fillText('N', n0[0], n0[1] + 15);
-        }
-      }
-    },
     // O — compound growth as coin stacks: paid-in (blue) vs growth (red), one drawdown.
     compound(ctx, w, h, p, rnd) {
       const Y = 40, step = 4, crashAt = 12 + 4 * Math.floor(rnd() * 3), stacks = [];
@@ -1485,6 +1391,173 @@
         label(ctx, last.cx, last.top, 'growth', -1, C.accent, true, 14);
         label(ctx, last.cx - last.rx, last.paidTop + 30, 'paid in', -1, C.blue, false, -14);
         if (ci >= 0) label(ctx, geo[ci].cx, geo[ci].top, 'drawdown', -1, C.ink2, true, 20);
+      }
+    },
+    // N — DARKLAB: isometric DIETI campus on Via Claudio, opposite the Maradona (with a live match).
+    campus(ctx, w, h, p) {
+      const c = Math.cos(Math.PI / 6), si = Math.sin(Math.PI / 6);
+      // Scene (world units; x east, y south, z up)
+      const ROAD = [-17, -3];
+      const blocks = [                                  // [x, y, w, d, h, id]
+        [-118, -96, 40, 30, 16], [-66, -104, 42, 44, 26], [36, -108, 36, 40, 20],
+        [80, -86, 40, 30, 14], [-128, -52, 36, 28, 12], [-14, -70, 40, 46, 46, 'dieti'],
+      ].sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+      const S0 = [6, 74], RO = [86, 58], RI = [62, 41], PE = [47, 29], ZR = 20, ZP = 3, PIT = [33, 19];
+      // Fit everything into the canvas.
+      const isoRaw = (x, y, z = 0) => [(x - y) * c, (x + y) * si - z];
+      const probe = [];                                  // fit to what's actually drawn
+      blocks.forEach(([x, y, bw, bd, bh]) => { for (const [px, py] of [[x, y], [x + bw, y], [x, y + bd], [x + bw, y + bd]]) probe.push([px, py, 0], [px, py, bh]); });
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) for (const z of [0, ZR]) probe.push([S0[0] + Math.cos(a) * RO[0], S0[1] + Math.sin(a) * RO[1], z]);
+      probe.push([-140, -10, 0], [115, -10, 0], [0, -130, 0]);
+      const xs = probe.map((q) => isoRaw(...q)[0]), ys = probe.map((q) => isoRaw(...q)[1]);
+      const pad = MINI ? 6 : 22, bottomPad = MINI ? 6 : 34;
+      const s = Math.min((w - pad * 2) / (Math.max(...xs) - Math.min(...xs)), (h - pad - bottomPad) / (Math.max(...ys) - Math.min(...ys)));
+      const ox = pad - Math.min(...xs) * s + ((w - pad * 2) - (Math.max(...xs) - Math.min(...xs)) * s) / 2;
+      const oy = pad - Math.min(...ys) * s + ((h - pad - bottomPad) - (Math.max(...ys) - Math.min(...ys)) * s) / 2;
+      const I = (x, y, z = 0) => { const r = isoRaw(x, y, z); return [ox + r[0] * s, oy + r[1] * s]; };
+      const mv = (q) => ctx.moveTo(q[0], q[1]), ln = (q) => ctx.lineTo(q[0], q[1]);
+      const reveal = (i, n) => clamp(p * 1.25 * n - i, 0, 1);
+      const N = blocks.length + 4;
+
+      // Ground grid + Via Claudio
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 0.5; ctx.globalAlpha = 0.07; ctx.beginPath();
+      for (let x = -150; x <= 125; x += 15) { mv(I(x, -112)); ln(I(x, 140)); }
+      for (let y = -112; y <= 140; y += 15) { mv(I(-150, y)); ln(I(125, y)); }
+      ctx.stroke();
+      ctx.globalAlpha = 0.5; ctx.lineWidth = 0.8; ctx.beginPath();
+      mv(I(-150, ROAD[0])); ln(I(125, ROAD[0])); mv(I(-150, ROAD[1])); ln(I(125, ROAD[1])); ctx.stroke();
+      ctx.setLineDash([5, 6]); ctx.globalAlpha = 0.3; ctx.beginPath(); mv(I(-150, -10)); ln(I(125, -10)); ctx.stroke(); ctx.setLineDash([]);
+
+      // Buildings (opaque, back to front)
+      const poly = (pts) => { ctx.beginPath(); pts.forEach((q, i) => (i ? ln(q) : mv(q))); ctx.closePath(); };
+      let dieti = null;
+      blocks.forEach((b, i) => {
+        const [x, y, bw, bd, bh, id] = b, k = reveal(i, N); if (k <= 0) return;
+        const x1 = x + bw, y1 = y + bd;
+        const faces = [[I(x, y, bh), I(x1, y, bh), I(x1, y1, bh), I(x, y1, bh)], [I(x1, y, 0), I(x1, y1, 0), I(x1, y1, bh), I(x1, y, bh)], [I(x, y1, 0), I(x1, y1, 0), I(x1, y1, bh), I(x, y1, bh)]];
+        ctx.globalAlpha = k; ctx.fillStyle = C.paper; faces.forEach((f) => { poly(f); ctx.fill(); });
+        ctx.strokeStyle = C.ink; ctx.lineWidth = id ? 1.15 : 0.9; ctx.globalAlpha = k * (id ? 1 : 0.8);
+        faces.forEach((f) => { poly(f); ctx.stroke(); });
+        ctx.globalAlpha = k * 0.32; ctx.lineWidth = 0.6; ctx.beginPath();
+        for (let z = 6; z < bh; z += 6) { mv(I(x1, y, z)); ln(I(x1, y1, z)); ln(I(x, y1, z)); }
+        ctx.stroke();
+        if (id === 'dieti') {                                  // top floor = ARCLAB · DARKLAB
+          const z0 = bh - 7, z1 = bh, band = [[I(x1, y, z0), I(x1, y1, z0), I(x1, y1, z1), I(x1, y, z1)], [I(x, y1, z0), I(x1, y1, z0), I(x1, y1, z1), I(x, y1, z1)]];
+          ctx.globalAlpha = 0.3 * k; ctx.fillStyle = C.accent; band.forEach((f) => { poly(f); ctx.fill(); });
+          ctx.globalAlpha = k; ctx.strokeStyle = C.accent; ctx.lineWidth = 1.3; band.forEach((f) => { poly(f); ctx.stroke(); });
+          ctx.globalAlpha = 0.75 * k; ctx.lineWidth = 0.8; ctx.beginPath();
+          for (let t = 4; t < bw - 2; t += 5) { mv(I(x + t, y1, z0 + 1.5)); ln(I(x + t, y1, z1 - 1.5)); }
+          for (let t = 4; t < bd - 2; t += 5) { mv(I(x1, y + t, z0 + 1.5)); ln(I(x1, y + t, z1 - 1.5)); }
+          ctx.stroke();
+          dieti = { top: I(x + bw / 2, y + bd / 2, bh), lab: I(x1, y1, (z0 + z1) / 2) };
+        }
+      });
+
+      // Stadio Diego Armando Maradona — an opaque bowl
+      const ks = reveal(blocks.length, N);
+      const ell = (rx, ry, z, a0 = 0, a1 = Math.PI * 2, n = 72) => { for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * (i / n), q = I(S0[0] + Math.cos(a) * rx, S0[1] + Math.sin(a) * ry, z); i ? ln(q) : mv(q); } };
+      const at = (rx, ry, z, a) => I(S0[0] + Math.cos(a) * rx, S0[1] + Math.sin(a) * ry, z);
+      if (ks > 0) {
+        // the screen-front of an iso ellipse is around a = π/4 (x and y both positive)
+        const f0 = -Math.PI / 4, f1 = (3 * Math.PI) / 4;
+        ctx.globalAlpha = ks; ctx.fillStyle = C.paper;
+        ctx.beginPath(); ell(RO[0], RO[1], ZR); ctx.fill();                                   // roof disc
+        ctx.beginPath(); ell(RO[0], RO[1], 0, f0, f1); ell(RO[0], RO[1], ZR, f1, f0); ctx.closePath(); ctx.fill(); // front wall
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.95; ctx.globalAlpha = ks;
+        ctx.beginPath(); ell(RO[0], RO[1], ZR); ctx.stroke();
+        ctx.beginPath(); ell(RO[0], RO[1], 0, f0, f1); ctx.stroke();
+        ctx.globalAlpha = 0.45 * ks; ctx.lineWidth = 0.7; ctx.beginPath();
+        for (let a = f0; a <= f1 + 1e-6; a += Math.PI / 24) { mv(at(RO[0], RO[1], 0, a)); ln(at(RO[0], RO[1], ZR, a)); }
+        ctx.stroke();
+        // roof ring: radial trusses from the outer edge to the opening
+        ctx.globalAlpha = 0.4 * ks; ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 30) { mv(at(RO[0], RO[1], ZR, a)); ln(at(RI[0], RI[1], ZR, a)); }
+        ctx.stroke();
+        ctx.globalAlpha = ks; ctx.lineWidth = 0.95; ctx.beginPath(); ell(RI[0], RI[1], ZR); ctx.stroke();
+        // inside the bowl (clipped to the opening): seat tiers down to the pitch
+        ctx.save(); ctx.beginPath(); ell(RI[0], RI[1], ZR); ctx.clip();
+        ctx.fillStyle = C.paper; ctx.globalAlpha = ks; ctx.fill();
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.6;
+        for (let k = 1; k <= 5; k++) {
+          const f = k / 6; ctx.globalAlpha = (0.25 + f * 0.25) * ks;
+          ctx.beginPath(); ell(RI[0] + (PE[0] - RI[0]) * f, RI[1] + (PE[1] - RI[1]) * f, ZR + (ZP - ZR) * f); ctx.stroke();
+        }
+        ctx.globalAlpha = 0.3 * ks; ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 18) { mv(at(RI[0], RI[1], ZR, a)); ln(at(PE[0], PE[1], ZP, a)); }
+        ctx.stroke();
+        // pitch
+        const kp = reveal(blocks.length + 1, N);
+        const [px, py] = PIT, P0 = [S0[0] - px, S0[1] - py], P1 = [S0[0] + px, S0[1] + py];
+        ctx.globalAlpha = ks; ctx.fillStyle = C.paper; ctx.beginPath(); ell(PE[0], PE[1], ZP); ctx.fill();
+        poly([I(P0[0], P0[1], ZP), I(P1[0], P0[1], ZP), I(P1[0], P1[1], ZP), I(P0[0], P1[1], ZP)]);
+        ctx.globalAlpha = 0.1 * kp; ctx.fillStyle = C.blue; ctx.fill();
+        ctx.globalAlpha = 0.85 * kp; ctx.strokeStyle = C.blue; ctx.lineWidth = 0.9; ctx.stroke();
+        ctx.beginPath(); mv(I(S0[0], P0[1], ZP)); ln(I(S0[0], P1[1], ZP));
+        for (let i = 0; i <= 36; i++) { const a = (i / 36) * Math.PI * 2, q = I(S0[0] + Math.cos(a) * 6, S0[1] + Math.sin(a) * 6, ZP); i ? ln(q) : mv(q); }
+        [[P0[0], 7], [P1[0], -7]].forEach(([bx, d]) => { mv(I(bx, S0[1] - 8, ZP)); ln(I(bx + d, S0[1] - 8, ZP)); ln(I(bx + d, S0[1] + 8, ZP)); ln(I(bx, S0[1] + 8, ZP)); });
+        ctx.stroke();
+        ctx.restore();
+        CAMPUS = { I, S0, PIT, ZP, s };
+      }
+
+      // Labels
+      const kl = reveal(blocks.length + 2, N);
+      if (kl > 0.5) {
+        if (dieti) label(ctx, dieti.lab[0], dieti.lab[1], 'ARCLAB · DARKLAB', 1, C.accent, true, -24);
+        if (dieti) label(ctx, dieti.top[0], dieti.top[1], 'DIETI · UniNA', 1, C.ink2, true, 22);
+        const st = at(RO[0], RO[1], 0, Math.PI * 0.62); label(ctx, st[0], st[1], 'Stadio Diego Armando Maradona', -1, C.ink2, true, -20);
+        const rd = I(-140, -10); label(ctx, rd[0], rd[1], 'Via Claudio', 1, C.ink3, false, 12);
+        if (!MINI && w >= 480) {
+          ctx.globalAlpha = 0.8; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+          ctx.fillText('FUORIGROTTA · NAPOLI · 40.82°N 14.19°E', 14, h - 22);
+          ctx.textAlign = 'right'; ctx.fillText('schematic · not to scale', w - 14, h - 22);
+          const n0 = [w - 30, 30]; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(n0[0], n0[1] + 12); ctx.lineTo(n0[0], n0[1] - 8); ctx.lineTo(n0[0] - 4, n0[1] - 2); ctx.moveTo(n0[0], n0[1] - 8); ctx.lineTo(n0[0] + 4, n0[1] - 2); ctx.stroke();
+          ctx.textAlign = 'center'; ctx.fillText('N', n0[0], n0[1] + 15);
+        }
+      }
+    },
+  };
+
+  /* ── Live layer for the campus figure: 5-a-side on the Maradona pitch ── */
+  let CAMPUS = null;
+  const LIVE = {
+    campus(ctx, w, h, t) {
+      if (!CAMPUS) return;
+      const { I, S0, PIT, ZP, s } = CAMPUS;
+      const P = (u, v) => I(S0[0] + u * PIT[0], S0[1] + v * PIT[1], ZP);
+      const home = [[-0.9, 0], [-0.45, -0.55], [-0.45, 0.55], [0.05, -0.25], [0.15, 0.4]];   // azzurro, attack right
+      const away = [[0.9, 0], [0.45, 0.5], [0.45, -0.5], [-0.1, 0.3], [-0.2, -0.35]];
+      const drift = (b, i, side) => [clamp(b[0] + Math.sin(t * 0.7 + i * 1.7 + side) * 0.12, -0.95, 0.95), clamp(b[1] + Math.cos(t * 0.9 + i * 2.3 + side) * 0.14, -0.9, 0.9)];
+      const H = home.map((b, i) => drift(b, i, 0)), A = away.map((b, i) => drift(b, i, 3));
+      // Ball: a deterministic passing sequence; every 7th pass is a shot.
+      const PASS = 0.9, n = Math.floor(t / PASS), f = (t / PASS) % 1;
+      const seq = (k) => { const r = Math.sin(k * 12.9898) * 43758.5453; return r - Math.floor(r); };
+      const holder = (k) => {
+        if (k % 7 === 6) return { shot: (k % 14 === 6) ? 1 : -1 };       // alternate goals
+        const team = seq(k) < 0.62 ? H : A; return { pos: team[1 + Math.floor(seq(k + 99) * 4)], team };
+      };
+      const from = holder(n - 1), to = holder(n);
+      const posOf = (hd) => hd.shot ? [hd.shot * 1.02, (seq(n) - 0.5) * 0.3] : hd.pos;
+      const a = from.shot ? [0, 0] : posOf(from), b = posOf(to);
+      const e = f * f * (3 - 2 * f), lift = Math.sin(Math.PI * f) * (to.shot ? 0.9 : 0.35);
+      const ball = [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e];
+      const r = Math.max(1.6, s * 1.6);
+      const dot = (q, col, fill) => { const p = P(q[0], q[1]); ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.stroke(); };
+      ctx.globalAlpha = 1;
+      A.forEach((q) => dot(q, C.ink, C.paper));
+      H.forEach((q) => dot(q, '#00a7e1', '#00a7e1'));
+      // ball + shadow
+      const bp = P(ball[0], ball[1]);
+      ctx.globalAlpha = 0.35; ctx.fillStyle = C.ink; ctx.beginPath(); ctx.ellipse(bp[0], bp[1], r * 0.8, r * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.strokeStyle = C.paper; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(bp[0], bp[1] - lift * 10 * s, r * 0.75, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      // GOL!
+      if (from.shot && f < 0.75) {
+        const g = P(from.shot * 1.0, 0); ctx.globalAlpha = 1 - f / 0.75;
+        ctx.font = `700 ${Math.round(12 + f * 8)}px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillStyle = C.paper; ctx.fillRect(g[0] - 22, g[1] - 26 - f * 10, 44, 18);
+        ctx.fillStyle = from.shot > 0 ? '#00a7e1' : C.ink; ctx.fillText('GOL!', g[0], g[1] - 8 - f * 10);
+        ctx.globalAlpha = 1;
       }
     },
   };
@@ -1516,8 +1589,13 @@
       const isStatic = canvas.hasAttribute('data-static') || (document.documentElement.dataset.vt === '1' && canvas.closest('.post-cover'));
       let progress = reduceMotion || isStatic ? 1 : 0;
 
+      // Live figures (e.g. the match on the Maradona pitch): the static drawing is cached
+      // once and the live layer is painted on top each frame while the figure is on screen.
+      const live = canvas.hasAttribute('data-live') && LIVE[kind] && !reduceMotion && !isStatic;
+      let cache = null, geo = null, liveOn = false, liveVisible = false;
       const render = () => {
         const { ctx, w, h } = setupCanvas(canvas);
+        geo = { ctx, w, h }; cache = null;
         ctx.clearRect(0, 0, w, h);
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         // Contour base.
@@ -1538,6 +1616,22 @@
         FIGS[kind]?.(ctx, w, h, progress, mulberry32(seed * 101));
         if (saved) Object.assign(C, saved);
         MINI = false;
+        if (!live && kind === 'campus' && progress >= 1) LIVE.campus(ctx, w, h, 4.2);   // still frame of the match
+      };
+      const liveFrame = (now) => {
+        if (!liveOn) return;
+        if (liveVisible && !document.hidden && geo) {
+          const { ctx, w, h } = geo;
+          if (!cache) { cache = document.createElement('canvas'); cache.width = canvas.width; cache.height = canvas.height; cache.getContext('2d').drawImage(canvas, 0, 0); }
+          ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(cache, 0, 0); ctx.restore();
+          LIVE[kind](ctx, w, h, now / 1000);
+        }
+        requestAnimationFrame(liveFrame);
+      };
+      const startLive = () => {
+        if (!live || liveOn) return;
+        liveOn = true; requestAnimationFrame(liveFrame);
+        new IntersectionObserver(([en]) => { liveVisible = en.isIntersecting; }).observe(canvas);
       };
 
       render();
@@ -1553,6 +1647,7 @@
               progress = ease((now - t0) / dur);
               render();
               if (progress < 1) requestAnimationFrame(step);
+              else if (live) startLive();
               else if (loop) setTimeout(() => {           // hold, then redraw with a fresh layout
                 if (document.hidden) { document.addEventListener('visibilitychange', play, { once: true }); return; }
                 seed = (seed * 48271) % 9973 + 1; play();

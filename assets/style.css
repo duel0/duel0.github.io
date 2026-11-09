@@ -1277,3 +1277,14 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 #team .team-fig canvas { background: var(--napoli-panel); border-color: color-mix(in oklab, var(--accent) 30%, var(--napoli-navy)); }
 #team .team-fig figcaption span:first-child { color: var(--accent); }
 #team .team-brand:hover .team-name { color: var(--accent); }
+
+/* napwnli: "PROUD TO BE NAPWNLI" under the figure */
+#team .team { align-items: stretch; }
+.team-side { display: flex; flex-direction: column; gap: 18px; }
+.team-proud {
+  margin: auto 0 0; display: flex; flex-direction: column; align-items: flex-end; line-height: .86;
+  font-family: "Napoli", var(--sans); text-transform: uppercase; text-align: right;
+}
+.team-proud span { font-size: clamp(26px, 3vw, 40px); color: color-mix(in oklab, var(--accent) 70%, #fff); letter-spacing: .02em; }
+.team-proud b { font-weight: 400; font-size: clamp(56px, 7.4vw, 104px); color: transparent; -webkit-text-stroke: 1.5px var(--accent); letter-spacing: .01em; }
+@media (max-width: 900px) { .team-proud { align-items: flex-start; text-align: left; } }
