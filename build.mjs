@@ -607,7 +607,10 @@ async function generateOg(posts) {
     const png = path.join(OG_DIR, `${c.key}.png`);
     if (manifest[c.key] === key && fs.existsSync(png)) continue;
     const html = path.join(srcDir, `${c.key}.html`);
-    write(html, fill(tpl, { root: `file://${ROOT}/`, ...c, kicker: esc(c.kicker) }));
+    const figure = c.key === 'site'
+      ? '<div class="og-scene"><canvas id="scene" data-static data-quiet aria-hidden="true"></canvas></div>'
+      : `<div class="og-fig"><canvas data-fig="${c.fig}" data-seed="${c.seed}" data-static aria-hidden="true"></canvas></div>`;
+    write(html, fill(tpl, { root: `file://${ROOT}/`, ...c, kicker: esc(c.kicker), figure }));
     const { mkdtempSync } = fs;
     for (let attempt = 0; attempt < 3; attempt++) {
       const profile = mkdtempSync(path.join(os.tmpdir(), 'og-chrome-'));

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-no-bg>
+<html lang="en" data-theme="dark" data-og>
 <head>
   <meta charset="utf-8">
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -10,18 +10,22 @@
     .og-fig { position: absolute; top: 0; right: 0; width: 760px; height: 630px;
       -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); mask-image: linear-gradient(90deg, transparent 0, transparent 22%, #000 62%); }
     .og-fig canvas { display: block; width: 100%; height: 100%; }
-    .og-text { position: absolute; inset: 0; z-index: 2; box-sizing: border-box; padding: 60px 64px 54px;
-      display: flex; flex-direction: column; width: 720px; }
-    .og-brand { display: flex; align-items: center; gap: 14px; }
+    .og-text { position: absolute; inset: 0 auto 0 0; z-index: 2; box-sizing: border-box; padding: 40px 64px 96px;
+      display: flex; flex-direction: column; justify-content: center; width: 620px; }
+    #bg { position: absolute !important; -webkit-mask-image: radial-gradient(ellipse 60% 70% at 28% 50%, rgba(0,0,0,.35), #000 75%) !important; mask-image: radial-gradient(ellipse 60% 70% at 28% 50%, rgba(0,0,0,.35), #000 75%) !important; }
+    .og-scene { position: absolute; top: 96px; right: 10px; width: 740px; height: 400px; z-index: 1;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 12%, #000 30%); mask-image: linear-gradient(90deg, transparent 0, transparent 12%, #000 30%); }
+    .og-scene canvas { display: block; width: 100%; height: 100%; }
+    .og-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; }
     .og-brand svg { width: 40px; height: 40px; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
     .og-brand .dim { opacity: .5; } .og-brand .node { fill: var(--accent); stroke: none; }
     .og-brand span { font: 700 26px/1 var(--serif); color: var(--ink); letter-spacing: -0.04em; }
     .og-brand i { color: var(--ink-3); font-style: normal; }
-    .og-kicker { margin: auto 0 18px; font: 500 15px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
-    .og-title { margin: 0; font: 700 50px/1.1 var(--serif); letter-spacing: -0.045em; color: var(--ink); }
+    .og-kicker { margin: 0 0 18px; font: 500 15px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+    .og-title { margin: 0; font: 700 46px/1.1 var(--serif); letter-spacing: -0.045em; color: var(--ink); }
     .og-title em { color: var(--accent); font-style: normal; } .og-title em::before { content: '<'; opacity: .45; } .og-title em::after { content: '>'; opacity: .45; } .og-title em + em, .og-title em.def { color: var(--blue); }
-    .og-desc { margin: 20px 0 0; font: 400 24px/1.4 var(--sans); color: var(--ink-2); }
-    .og-foot { margin-top: 30px; display: flex; align-items: center; gap: 14px; font: 15px var(--mono); color: var(--ink-3); }
+    .og-desc { margin: 20px 0 0; font: 400 22px/1.4 var(--sans); color: var(--ink-2); }
+    .og-foot { position: absolute; left: 64px; bottom: 54px; margin: 0; display: flex; align-items: center; gap: 14px; font: 15px var(--mono); color: var(--ink-3); }
     .og-foot b { width: 40px; height: 1px; background: var(--ink-3); }
     .og-logos { position: absolute; right: 64px; bottom: 54px; z-index: 3; display: flex; align-items: center; gap: 28px; opacity: .8; }
     .og-logos img { display: block; width: auto; }
@@ -39,7 +43,7 @@
       <span class="napwnli"><img class="nap" src="{{root}}assets/team/napwnli-sm.png"><span>NAPWNLI</span></span>
       <img class="un" src="{{root}}assets/logos/unina.png">
     </div>
-    <div class="og-fig"><canvas data-fig="{{fig}}" data-seed="{{seed}}" data-static aria-hidden="true"></canvas></div>
+    {{figure}}
     <div class="og-text">
       <div class="og-brand">
         <svg viewBox="0 0 32 32"><path d="M9 27V5h9"/><path d="M9 15h6"/><path d="M15 15h3.5a6 6 0 0 1 0 12H9"/><path class="dim" d="M18 5a5 5 0 0 1 0 10"/><circle class="node" cx="24" cy="21" r="1.9"/></svg>
@@ -51,6 +55,7 @@
       <p class="og-foot"><b></b>{{url}}</p>
     </div>
   </div>
+  <script src="{{root}}assets/scene-logs.js"></script>
   <script src="{{root}}assets/graphics.js"></script>
 </body>
 </html>

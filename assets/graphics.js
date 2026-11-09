@@ -717,13 +717,13 @@
         ['ws1', P(desks[0].x + 11, 24, desks[0].z - 2), 'U-11 Workstation', 14],
         ['ws3', P(desks[2].x + 11, 24, desks[2].z - 2), 'U-13 Workstation', 14],
       ];
-      items.forEach(([id, pt, text, lift]) => {
+      if (!quiet) items.forEach(([id, pt, text, lift]) => {
         const active = focus.has(id);
         if (!showAll && !active && !owned.has(id) && id !== hoverId && id !== selId) return;
         if (showAll && small && !['xfw', 'ifw', 'dc', 'mail'].includes(id)) return;
         lab(pt, small ? text.split(' ').slice(1).join(' ') : text, lift, active ? C.ink : owned.has(id) ? C.accent : C.ink2);
       });
-      if (showAll && !small) {
+      if (quiet) { /* social card: agents only */ } else if (showAll && !small) {
         soc.layers.forEach((name, i) => lab(P(soc.x + (soc.w - i * 8) / 2, i * soc.gap + 9, soc.z + (soc.d - i * 8) / 2), name, 10 + i * 4, C.ink2, 1));
       } else {
         lab(P(soc.x + soc.w / 2, soc.gap * 2 + 9, soc.z + soc.d / 2 - 8), small ? 'SOC stack' : 'C-00 SOC · SIEM · EDR · SOAR', 14, focus.has('siem') ? C.blue : C.ink2, 1);
@@ -873,7 +873,9 @@
 
     // ── Loop ──
     const STILL = 9.2; // frame used for reduced motion: full chain + response
-    let running = false, visible = true, playing = !reduceMotion, clock = reduceMotion ? STILL : 0;
+    const isStatic = canvas.hasAttribute('data-static');
+    const quiet = canvas.hasAttribute('data-quiet');   // social card: one finished frame
+    let running = false, visible = true, playing = !reduceMotion && !isStatic, clock = reduceMotion || isStatic ? STILL : 0;
     let prev = performance.now();
     const frame = (now) => {
       if (!running) return;
@@ -1480,7 +1482,7 @@
     const noise = makeNoise(4242);
     const SC = 1 / 260, PARALLAX = 0.18, CELL = 12;
     const levels = range(0.2, 0.84, 0.05);
-    let fade = reduceMotion ? 1 : 0, queued = false, lastY = -1;
+    let fade = reduceMotion || document.documentElement.hasAttribute('data-og') ? 1 : 0, queued = false, lastY = -1;
 
     const render = () => {
       queued = false;
@@ -1490,7 +1492,8 @@
       ctx.clearRect(0, 0, w, h);
       ctx.lineCap = 'round';
       // Contours.
-      ctx.strokeStyle = ALERT ? C.accent : C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = (ALERT ? 0.24 : 0.11) * fade;
+      const boost = document.documentElement.hasAttribute('data-og') ? 2.3 : 1;
+      ctx.strokeStyle = ALERT ? C.accent : C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = (ALERT ? 0.24 : 0.11) * fade * boost;
       drawContours(ctx, w, h, (x, y) => noise(x * SC, (y + oy) * SC), levels, CELL);
       // One emphasised index contour, like on a survey map.
       ctx.globalAlpha = 0.16 * fade; ctx.lineWidth = 1;
