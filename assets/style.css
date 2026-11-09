@@ -1040,7 +1040,6 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .sub-head { margin: clamp(40px, 5vw, 56px) 0 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
 .talks { border-top: 0; }
 .talks li { grid-template-columns: 72px minmax(0, 1fr); }
-.talks .pub-title:hover { text-decoration: none; }
 .timeline .tl-award { margin-top: 4px; color: var(--accent) !important; font-size: 13.5px !important; }
 
 /* Timeline logos */
@@ -1049,3 +1048,5 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .tl-logo img { display: block; width: 28px; height: 28px; object-fit: contain; opacity: .85; }
 .timeline li:hover .tl-logo img { opacity: 1; }
 .tl-badge { border: 1px solid var(--line); border-radius: 50%; font-size: 9.5px; letter-spacing: .04em; color: var(--ink-2); }
+.pub-venue a { color: var(--ink-2); }
+.pub-venue a:hover { color: var(--accent); }
