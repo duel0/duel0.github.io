@@ -956,8 +956,8 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .hero-mark svg { stroke-width: 1.25; }
 .hero-name { white-space: nowrap; font: inherit; text-box: trim-both cap alphabetic; letter-spacing: -0.02em; color: var(--ink); }
 .hero-name i { color: var(--ink-2); }
-.hero-id:hover .dim { opacity: 1; stroke: var(--accent); }
-.hero-id .dim { transition: opacity .25s, stroke .25s; }
+.hero-id:hover .brand-mark .dim { opacity: 1; stroke: var(--accent); }
+.hero-id:hover .brand-mark .node { transform: translate(-2px, 2px); }   /* same as the header mark */
 
 /* Scene log window */
 .logwin {
