@@ -154,7 +154,7 @@ window.SCENE_LOGS = {
     lines: [
       [1.0, 'dim', '4624  Logon Type 2 · CORP\\a.bianchi (interactive)'],
       [6.0, 'dim', '4634  Logoff · CORP\\a.bianchi'],
-      [9.0, 'dim', '— nothing to see here. WS12 was never touched. —'],
+      [9.0, 'dim', 'nothing to see here. WS12 was never touched.'],
     ],
   },
   ws3: {

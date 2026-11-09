@@ -201,12 +201,12 @@
   };
   const FILES = {
     'about.txt': [
-      'Francesco Balassone — AI Security Research Lead @ CYBER RANGES,',
+      'Francesco Balassone, AI Security Research Lead @ CYBER RANGES,',
       'industrial PhD student @ University of Naples Federico II.',
       'Offensive & defensive AI agents, adversary emulation, cyber ranges.',
     ],
     'napwnli.txt': [
-      'napwnli — competitive hacking team of the University of Naples Federico II.',
+      'napwnli, competitive hacking team of the University of Naples Federico II.',
       'Born in 2024 from the CyberChallenge.IT Naples finalists. Co-founder & captain.',
       `→ ${LINKS.napwnli}`,
     ],
@@ -365,10 +365,10 @@
         '  fun:  cowsay · donkeysay · fortune · figlet · lolcat · sl · cmatrix',
         '        neofetch · ping · hack · uname -a · ps · uptime · echo · man',
         '  pipes work too:  fortune | cowsay | lolcat',
-        '  redteam         — you probably shouldn\'t.',
-        '  submit <flag>   — found something? (there is a flag hidden on this site)',
+        '  redteam         you probably shouldn\'t.',
+        '  submit <flag>   found something? (there is a flag hidden on this site)',
       ], 'dim'),
-      whoami: () => print(isRoot() ? 'root — flag captured. respect. 🫡' : 'visitor — curious, apparently. try `help`.'),
+      whoami: () => print(isRoot() ? 'root, flag captured. respect. 🫡' : 'visitor, curious, apparently. try `help`.'),
       about: () => print(FILES['about.txt']),
       ls: (args) => print(Object.keys(FILES).filter((f) => args.includes('-a') || args.includes('-la') || !f.startsWith('.')).join('   ')),
       cat: ([f]) => (FILES[f] ? print(FILES[f]) : print(`cat: ${f || ''}: No such file or directory`, 'red')),
@@ -411,7 +411,7 @@
             ' |  _|  | | / _` | / _` |_|',
             ' |_|    |_| \\__,_| \\__, (_)  the donkey sees all.',
             '                   |___/',
-            'You are now root. Screenshot this and send it to me on LinkedIn —',
+            'You are now root. Screenshot this and send it to me on LinkedIn:',
           ], 'green');
           print({ pre: '→ ', text: LINKS.linkedin, href: LINKS.linkedin }, 'green');
         } else print('✕ wrong flag. the format is flag{...}', 'red');
@@ -446,7 +446,7 @@
           await sleep(reduceMotion ? 0 : 420);
           print(`64 bytes from ${host}: icmp_seq=${i} ttl=117 time=${(8 + Math.random() * 14).toFixed(1)} ms`);
         }
-        print([`--- ${host} ping statistics ---`, '4 packets transmitted, 4 received, 0% packet loss', '(simulated — browsers can\'t send ICMP. the donkey pinged it for you.)'], 'dim');
+        print([`--- ${host} ping statistics ---`, '4 packets transmitted, 4 received, 0% packet loss', '(simulated, browsers can\'t send ICMP. the donkey pinged it for you.)'], 'dim');
       },
       sl: () => animate(slFrames(), 70, 'art'),
       cmatrix: () => animate(matrixFrames(), 70, 'green art'),
@@ -455,12 +455,12 @@
         const lines = ['[*] bypassing firewall… (it was turned off)', '[*] downloading more RAM… 512 GB ✓', '[*] enhancing… enhancing… ENHANCE', '[*] reversing the polarity of the neutron flow', '[*] hacking the mainframe with two keyboards', '[+] access granted. (no it isn\'t.)'];
         for (const l of lines) { await sleep(reduceMotion ? 0 : 380); print(l, l.startsWith('[+]') ? 'green' : 'red'); }
       },
-      vim: () => print(['~', '~', '~', '"you are now stuck in vim."', 'just kidding — this is not a real editor. type :q! anyway for the vibes.'], 'dim'),
+      vim: () => print(['~', '~', '~', '"you are now stuck in vim."', 'just kidding, this is not a real editor. type :q! anyway for the vibes.'], 'dim'),
       vi: () => COMMANDS.vim(), nano: () => COMMANDS.vim(), emacs: () => print('emacs: nice OS, lacks a decent editor.', 'dim'),
       ':q!': () => print('you escaped. most people never do.', 'green'),
       coffee: () => print('HTTP/1.1 418 I\'m a teapot', 'red'),
       yes: () => print(Array(12).fill('y').concat('^C'), 'dim'),
-      man: ([c]) => print(c && COMMANDS[c] ? `${c}(1) — it does what it says. probably. see \`help\`.` : 'What manual page do you want?\nFor example, try \'man cowsay\'.'),
+      man: ([c]) => print(c && COMMANDS[c] ? `${c}(1), it does what it says. probably. see \`help\`.` : 'What manual page do you want?\nFor example, try \'man cowsay\'.'),
       exit: () => toggle(false),
     });
     const NAMES = Object.keys(COMMANDS).filter((n) => /^[a-z]/.test(n));
@@ -491,7 +491,7 @@
       if (open) {
         if (!opened) {
           opened = true; prompt();
-          print(['napwnli shell v1.0 — type `help` to start.', 'hint: there is a flag somewhere on this site. 3 parts.'], 'dim');
+          print(['napwnli shell v1.0, type `help` to start.', 'hint: there is a flag somewhere on this site. 3 parts.'], 'dim');
         }
         setTimeout(() => input.focus(), 30);
       } else input.blur();

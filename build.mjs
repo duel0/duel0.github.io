@@ -23,7 +23,7 @@ const SITE = {
   url: 'https://duel0.github.io',          // change if you use a custom domain
   title: 'Francesco Balassone',
   author: 'Francesco Balassone',
-  description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs — and everything that comes to my mind.',
+  description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs, and everything that comes to my mind.',
 };
 const COVER_STYLES = ['adversary', 'network', 'signal', 'offense', 'evaluation', 'terrain'];   // auto-picked
 const EXTRA_COVERS = ['compound'];                                                              // opt-in via cover:
@@ -59,7 +59,7 @@ function inline(src) {
   s = s.replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, '$1<em>$2</em>');
   s = s.replace(/==([^=]+)==/g, '<mark>$1</mark>');
   s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');
-  s = s.replace(/ -- /g, ' — ');
+  s = s.replace(/ -- /g, ', ');
   return s.replace(/\u0000(\d+)\u0000/g, (_, i) => codes[+i]);
 }
 
@@ -207,7 +207,7 @@ function pullQuote(md, ctx) {
   const lines = md.trim().split('\n');
   let cite = '';
   if (/^(—|--)\s*/.test(lines[lines.length - 1] || '')) cite = lines.pop().replace(/^(—|--)\s*/, '');
-  return `<figure class="pullquote"><blockquote>${render(lines.join('\n'), ctx)}</blockquote>${cite ? `<figcaption class="mono">— ${inline(cite)}</figcaption>` : ''}</figure>`;
+  return `<figure class="pullquote"><blockquote>${render(lines.join('\n'), ctx)}</blockquote>${cite ? `<figcaption class="mono">${inline(cite)}</figcaption>` : ''}</figure>`;
 }
 
 function terminal(title, body) {
@@ -295,7 +295,7 @@ function container(type, arg, body, ctx) {
   </div>
   <canvas aria-label="Chart of money paid in versus portfolio value over time"></canvas>
   <dl class="calc-out mono"></dl>
-  <figcaption class="mono"><span>FIG. ${String(ctx.fig).padStart(2, '0')}</span>${inline(body.trim() || 'Illustrative only — fixed return, no fees, taxes or inflation. Not financial advice.')}</figcaption>
+  <figcaption class="mono"><span>FIG. ${String(ctx.fig).padStart(2, '0')}</span>${inline(body.trim() || 'Illustrative only, fixed return, no fees, taxes or inflation. Not financial advice.')}</figcaption>
 </figure>`;
     }
     case 'columns': {
@@ -685,7 +685,7 @@ function build() {
   // Blog index.
   write(path.join(OUT, 'blog', 'index.html'), page({
     root: '../',
-    title: `Blog — ${SITE.title}`,
+    title: `Blog · ${SITE.title}`,
     description: SITE.description,
     canonical: `${SITE.url}/blog/`,
     ogType: 'website',
@@ -716,7 +716,7 @@ function build() {
       : '<span></span>';
     write(path.join(OUT, 'blog', p.slug, 'index.html'), page({
       root: '../../',
-      title: `${esc(p.title)} — ${SITE.title}`,
+      title: `${esc(p.title)} · ${SITE.title}`,
       description: esc(p.description),
       canonical,
       ogType: 'article',
@@ -736,7 +736,7 @@ function build() {
       </header>
       <figure class="post-cover">
         <div${vt('c', p)}>${cover(p)}</div>
-        <figcaption class="mono"><span>FIG. 00 — Cover</span><span>${p.cover} · seed ${p.seed}</span></figcaption>
+        <figcaption class="mono"><span>FIG. 00 · Cover</span><span>${p.cover} · seed ${p.seed}</span></figcaption>
       </figure>
       <div class="prose narrow">
 ${p.html}
@@ -745,7 +745,7 @@ ${p.html}
         <div class="end-card">
           <div class="ornament" aria-hidden="true"><span></span><i>◆</i><span></span></div>
           <p class="end-title">Thanks for reading.</p>
-          <p class="end-sub">New posts on offensive AI, agents and cyber ranges — straight to your reader.</p>
+          <p class="end-sub">New posts on offensive AI, agents and cyber ranges, straight to your reader.</p>
           <div class="end-actions"><a class="btn btn-solid" href="../../feed.xml">Subscribe via RSS <span aria-hidden="true">↗</span></a>${share}</div>
         </div>
         <nav class="post-nav" aria-label="More posts">${navCard(older, 'older')}${navCard(newer, 'newer')}</nav>
@@ -766,7 +766,7 @@ ${p.html}
   write(path.join(OUT, 'feed.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${esc(SITE.title)} — Blog</title>
+    <title>${esc(SITE.title)} · Blog</title>
     <link>${SITE.url}/blog/</link>
     <description>${esc(SITE.description)}</description>${items}
   </channel>

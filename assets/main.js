@@ -118,7 +118,7 @@
     ['r', 'off ▸ pivoting: emulate APT29 playbook'],
     ['b', 'def ▸ TTP match: APT29? attribution conf. 0.41'],
     ['d', '[eval] who was it, really?'],
-    ['g', '✓ round complete — results logged'],
+    ['g', '✓ round complete, results logged'],
   ];
 
   const cls = { d: 't-dim', r: 't-red', b: 't-blue', g: 't-green' };
