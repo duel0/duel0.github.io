@@ -620,7 +620,7 @@ async function generateOg(posts) {
   fs.mkdirSync(OG_DIR, { recursive: true });
   const manifestPath = path.join(OG_DIR, 'manifest.json');
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(read(manifestPath)) : {};
-  const tplHash = hash(tpl).toString(36);
+  const tplHash = hash(tpl + read(path.join(ROOT, 'assets', 'graphics.js')) + read(path.join(ROOT, 'assets', 'style.css'))).toString(36);   // redraw when the figures change
   const cards = [
     { key: 'site', kicker: 'AI Security Research Lead · CYBER RANGES', title: 'Teaching machines to <em>attack</em>, so we learn how to <em class="def">defend</em><span class="h1-cursor"></span>', desc: 'Offensive & defensive AI agents, adversary emulation, cyber ranges.', fig: 'network', seed: 11, url: 'duel0.github.io' },
     ...posts.filter((p) => !p.draft || INCLUDE_DRAFTS).map((p) => ({ key: p.slug, kicker: [p.category, ...p.tags].join(' · '), title: esc(p.title), desc: esc(p.description), fig: p.cover, seed: p.seed, url: `duel0.github.io/blog/${p.slug}` })),
