@@ -405,8 +405,19 @@
     } catch (e) { /* ignore */ }
   };
 
+  // neofetch card: reveal its lines one by one when it scrolls into view.
+  const initFetch = () => {
+    const f = document.querySelector('.fetch');
+    if (!f || reduceMotion || !('IntersectionObserver' in window)) return;
+    f.classList.add('will-reveal');
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { f.classList.add('is-in'); io.disconnect(); } }, { threshold: 0.35 });
+    io.observe(f);
+    f.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.click(); } });
+  };
+
   const boot = () => {
     initAttackPath();
+    initFetch();
     initDecrypt();
     initReticle();
     initConsole();

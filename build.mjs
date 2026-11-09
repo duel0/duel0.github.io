@@ -23,7 +23,7 @@ const SITE = {
   url: 'https://duel0.github.io',          // change if you use a custom domain
   title: 'Francesco Balassone',
   author: 'Francesco Balassone',
-  description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs.',
+  description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs — and everything that comes to my mind.',
 };
 const COVER_STYLES = ['adversary', 'network', 'signal', 'offense', 'evaluation', 'terrain'];
 
