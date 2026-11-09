@@ -189,7 +189,7 @@
      4. CONSOLE — press \\ (Italian keyboards: key left of 1), ~, ` or Ctrl/⌘+K.
      5. CTF — the flag check lives here (hash only).
      ══════════════════════════════════════════════════════════ */
-  const FLAG_SHA256 = '0211c4cc7ac7846b6ef11a6db6bafcde02093797e3c044245f3723678b89ad21';
+  const FLAG_SHA256 = '7f282c73354da5b9b278064fd03c1767d2a6798e12a42123d4745b5ef7754ba3';
   const ROOT = document.querySelector('link[rel="icon"]')?.getAttribute('href')?.replace('favicon.svg', '') ?? '';
 
   const LINKS = {
@@ -211,7 +211,41 @@
       `→ ${LINKS.napwnli}`,
     ],
     'contact.txt': Object.entries(LINKS).map(([k, v]) => `${k.padEnd(9)} ${v}`),
-    '.part3': ['3/3 (rot13): _4yy}', 'now: submit flag{...}'],
+    '.part3': ['3/3 (rot13): _f3zce3}', 'now: submit flag{...}'],
+  };
+  // /root, only reachable after the flag is captured.
+  const ROOT_FILES = {
+    'README.root': [
+      'welcome to /root. you earned it.',
+      '',
+      'few people make it this far. the ones who do usually end up',
+      'in a CTF team. napwnli is always looking for curious people.',
+      '',
+      'things to try here:',
+      '  cat hall_of_fame.txt',
+      '  cat donkey.ans',
+      '  ./forza.sh',
+    ],
+    'hall_of_fame.txt': [
+      '┌─ HALL OF FAME ─────────────────────────────┐',
+      '│ 1. duel0 (wrote the challenge, cheated)    │',
+      '│ 2. you?                                    │',
+      '└────────────────────────────────────────────┘',
+      'send me a screenshot of this shell on LinkedIn to get listed.',
+      `→ ${LINKS.linkedin}`,
+    ],
+    'forza.sh': ['#!/bin/bash', '# run me: ./forza.sh', 'echo "FORZA NAPWNLI" | figlet | lolcat --azzurro', 'celebrate --confetti --colors azzurro,white'],
+    'donkey.ans': null, // rendered by cat (ascii donkey)
+    '.bash_history': [
+      'nmap -sV duel0.github.io',
+      'curl -s duel0.github.io/robots.txt',
+      'cat /home/visitor/.part3',
+      'echo "..." | tr a-z n-za-m',
+      'submit flag{REDACTED}',
+      'sudo hire duel0',
+      'cd /root',
+    ],
+    '.ssh': null, // a directory, but locked
   };
 
   const initConsole = () => {
@@ -223,7 +257,46 @@
     document.body.append(box);
     const out = box.querySelector('.console-out'), input = box.querySelector('input'), ps = box.querySelector('.console-ps');
     const isRoot = () => store.get('pwned') === '1';
-    const prompt = () => { ps.textContent = isRoot() ? 'root@duel0:~#' : 'visitor@duel0:~$'; };
+    // Tiny filesystem: /, /home, /home/visitor, /root.
+    const HOME = () => (isRoot() ? '/root' : '/home/visitor');
+    let cwd = '/home/visitor';
+    const resolve = (p) => {
+      if (!p || p === '~') return HOME();
+      const parts = (p.startsWith('/') ? [] : cwd.split('/')).concat(p.replace(/^~(?=\/|$)/, HOME()).split('/'));
+      const stack = [];
+      parts.forEach((s) => { if (!s || s === '.') return; if (s === '..') stack.pop(); else stack.push(s); });
+      return `/${stack.join('/')}`;
+    };
+    const DIRS = { '/': ['home/', 'root/'], '/home': ['visitor/'] };
+    const filesIn = (d) => (d === '/home/visitor' ? FILES : d === '/root' ? ROOT_FILES : null);
+    const isDir = (d) => d in DIRS || !!filesIn(d);
+    const short = (d) => (d === HOME() ? '~' : d.startsWith(`${HOME()}/`) ? `~${d.slice(HOME().length)}` : d);
+    const prompt = () => {
+      const tag = `${isRoot() ? 'root' : 'visitor'}@duel0:${short(cwd)}`;
+      ps.textContent = `${tag}${isRoot() ? '#' : '$'}`;
+      box.querySelector('.console-bar span:nth-child(2)').textContent = `${isRoot() ? 'root' : 'visitor'}@duel0: ${short(cwd)}`;
+    };
+    // split "dir/file" into [dir, name]
+    const locate = (p) => { const full = resolve(p); const i = full.lastIndexOf('/'); return [full.slice(0, i) || '/', full.slice(i + 1), full]; };
+    const denied = (d) => d === '/root' && !isRoot();
+    const confetti = () => {
+      if (reduceMotion) return;
+      const c = el('canvas', { class: 'confetti', 'aria-hidden': 'true' });
+      Object.assign(c.style, { position: 'fixed', inset: '0', width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: '9999' });
+      document.body.append(c);
+      const dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+      c.width = W * dpr; c.height = H * dpr;
+      const g = c.getContext('2d'); g.scale(dpr, dpr);
+      const cols = ['#12a0d7', '#5fc8f0', '#ffffff', '#003c82'];
+      const bits = Array.from({ length: 220 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * 0.6, vx: (Math.random() - 0.5) * 2.4, vy: 2 + Math.random() * 3.5, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3, w: 5 + Math.random() * 6, c: pick(cols) }));
+      const t0 = performance.now();
+      const step = (t) => {
+        g.clearRect(0, 0, W, H);
+        bits.forEach((b) => { b.x += b.vx; b.y += b.vy; b.vy += 0.03; b.r += b.vr; g.save(); g.translate(b.x, b.y); g.rotate(b.r); g.fillStyle = b.c; g.fillRect(-b.w / 2, -b.w / 4, b.w, b.w / 2); g.restore(); });
+        if (t - t0 < 4500) requestAnimationFrame(step); else c.remove();
+      };
+      requestAnimationFrame(step);
+    };
     const history = []; let hi = 0, opened = false;
 
     const print = (lines, cls = '') => {
@@ -234,7 +307,7 @@
         if (typeof l === 'object' && l.href) {
           const a = el('a', { href: l.href, target: l.href.startsWith('http') ? '_blank' : '_self', rel: 'noopener' });
           a.textContent = l.text; p.append(l.pre || '', a);
-        } else p.textContent = l;
+        } else p.textContent = l === "" ? "\u00a0" : l;
         out.append(p);
       });
       out.scrollTop = out.scrollHeight;
@@ -306,8 +379,7 @@
       const chars = [...String(text).toUpperCase().slice(0, 14)].map((c) => FONT[c] || FONT['?']);
       return [0, 1, 2, 3, 4].map((r) => chars.map((g) => g[r].replace(/#/g, '█')).join(' '));
     };
-    const rainbow = (lines) => {
-      const hues = ['#ff5f4f', '#f0b36a', '#f6d58e', '#8ad19b', '#6fa6ff', '#c6a4ff'];
+    const rainbow = (lines, hues = ['#ff5f4f', '#f0b36a', '#f6d58e', '#8ad19b', '#6fa6ff', '#c6a4ff']) => {
       lines.forEach((line, li) => {
         const p = el('div', { class: 'cl art' });
         [...String(line)].forEach((ch, i) => { const s = el('span'); s.textContent = ch; s.style.color = hues[(i + li * 2) % hues.length]; p.append(s); });
@@ -361,7 +433,7 @@
       help: () => print([
         'commands:',
         '  whoami · about · papers · ctf · blog · contact · links',
-        '  ls [-a] · cat <file> · clear · history · date · exit',
+        '  ls [-a] · cd · pwd · cat <file> · clear · history · date · exit',
         '  fun:  cowsay · donkeysay · fortune · figlet · lolcat · sl · cmatrix',
         '        neofetch · ping · hack · uname -a · ps · uptime · echo · man',
         '  pipes work too:  fortune | cowsay | lolcat',
@@ -370,8 +442,25 @@
       ], 'dim'),
       whoami: () => print(isRoot() ? 'root, flag captured. respect. 🫡' : 'visitor, curious, apparently. try `help`.'),
       about: () => print(FILES['about.txt']),
-      ls: (args) => print(Object.keys(FILES).filter((f) => args.includes('-a') || args.includes('-la') || !f.startsWith('.')).join('   ')),
-      cat: ([f]) => (FILES[f] ? print(FILES[f]) : print(`cat: ${f || ''}: No such file or directory`, 'red')),
+      ls: (args) => {
+        const all = args.some((a) => /^-\w*a/.test(a));
+        const target = resolve(args.find((a) => !a.startsWith('-')) || '.');
+        if (denied(target)) return print(`ls: cannot open directory '${target}': Permission denied`, 'red');
+        if (!isDir(target)) return print(`ls: cannot access '${target}': No such file or directory`, 'red');
+        const names = DIRS[target] || Object.keys(filesIn(target)).map((f) => (f === '.ssh' ? '.ssh/' : f === 'forza.sh' ? 'forza.sh*' : f));
+        print(names.filter((f) => all || !f.startsWith('.')).join('   ') || '');
+      },
+      cat: ([f]) => {
+        if (!f) return print('usage: cat <file>', 'dim');
+        const [dir, name, full] = locate(f);
+        if (denied(dir)) return print(`cat: ${f}: Permission denied`, 'red');
+        if (isDir(full)) return print(`cat: ${f}: Is a directory`, 'red');
+        const files = filesIn(dir);
+        if (!files || !(name in files)) return print(`cat: ${f}: No such file or directory`, 'red');
+        if (name === '.ssh') return print(`cat: ${f}: Is a directory`, 'red');
+        if (name === 'donkey.ans') return print(bubble('forza napwnli sempre.').concat(DONKEY), 'art');
+        print(files[name].map((l) => (l.startsWith('→ http') ? { pre: '→ ', text: l.slice(2), href: l.slice(2) } : l)));
+      },
       papers: () => {
         const items = [...document.querySelectorAll('#pubs li')].slice(0, 6);
         if (!items.length) { print({ pre: 'full list → ', text: 'publications', href: `${ROOT}#publications` }); return; }
@@ -409,9 +498,10 @@
             '   __    _              _',
             '  / _|  | |  __ _   __ _| |  ✓ correct',
             ' |  _|  | | / _` | / _` |_|',
-            ' |_|    |_| \\__,_| \\__, (_)  the donkey sees all.',
+            ' |_|    |_| \\__,_| \\__, (_)  forza napwnli sempre.',
             '                   |___/',
-            'You are now root. Screenshot this and send it to me on LinkedIn:',
+            'You are now root. try: cd /root',
+            'and screenshot it for me on LinkedIn:',
           ], 'green');
           print({ pre: '→ ', text: LINKS.linkedin, href: LINKS.linkedin }, 'green');
         } else print('✕ wrong flag. the format is flag{...}', 'red');
@@ -420,8 +510,21 @@
     Object.assign(COMMANDS, {
       /* ── toys ─────────────────────────────────────────── */
       echo: (args, stdin) => print(args.length ? args.join(' ') : (stdin || []).join('\n')),
-      pwd: () => print('/home/visitor'),
-      cd: (args) => print(args[0] && !['~', '.', '/home/visitor'].includes(args[0]) ? `cd: ${args[0]}: Permission denied (nice try)` : '', args[0] ? 'red' : ''),
+      pwd: () => print(cwd),
+      cd: ([p]) => {
+        const target = resolve(p);
+        if (target === '/root/.ssh') return print(`cd: ${p}: even root has limits. 🔒`, 'red');
+        if (!isDir(target)) return print(`cd: ${p}: No such file or directory`, 'red');
+        if (denied(target)) return print(`cd: ${p}: Permission denied (capture the flag first)`, 'red');
+        cwd = target; prompt();
+        if (target === '/root') print('you made it. try `ls -a`.', 'green');
+      },
+      './forza.sh': async () => {
+        rainbow(figlet('FORZA'), ['#12a0d7', '#5fc8f0', '#ffffff']);
+        rainbow(figlet('NAPWNLI'), ['#12a0d7', '#5fc8f0', '#ffffff']);
+        print('sempre. 💙', 'blue');
+        if (!capture) confetti();
+      },
       uname: (args) => print(args.includes('-a') ? 'napwnliOS 6.6.6-duel0 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Donkey' : 'napwnliOS'),
       uptime: () => { const s = Math.floor(performance.now() / 1000); print(` ${new Date().toTimeString().slice(0, 8)} up ${Math.floor(s / 60)} min, 1 user, load average: 0.42, 0.13, 0.37`); },
       ps: () => print([
@@ -474,8 +577,15 @@
       let stdin = null;
       for (let i = 0; i < stages.length; i++) {
         const [cmd, ...args] = stages[i].split(/\s+/);
-        const fn = COMMANDS[cmd] || COMMANDS[cmd.toLowerCase()];
+        let fn = COMMANDS[cmd] || COMMANDS[cmd.toLowerCase()];
         const last = i === stages.length - 1;
+        // executing a path: ./forza.sh, /root/forza.sh, sh forza.sh
+        const exe = /^(sh|bash)$/.test(cmd) && args[0] ? args[0] : /^[./~]/.test(cmd) ? cmd : null;
+        if (exe) {
+          const r = resolve(exe);
+          if (r === '/root/forza.sh' && isRoot()) fn = COMMANDS['./forza.sh'];
+          else { capture = null; print(`bash: ${exe}: ${denied(r.replace(/\/[^/]*$/, '') || '/') ? 'Permission denied' : isDir(r) ? 'Is a directory' : 'No such file or directory'}`, 'red'); return; }
+        }
         if (!fn) { capture = null; print(`${cmd}: command not found. try \`help\``, 'red'); return; }
         if (!last) capture = [];
         await fn(args, stdin);
@@ -505,7 +615,7 @@
         e.preventDefault();
         const [c, ...rest] = input.value.split(' ');
         if (!rest.length) { const m = NAMES.filter((n) => n.startsWith(c)); if (m.length === 1) input.value = m[0] + ' '; else if (m.length) print(m.join('   '), 'dim'); }
-        else if (c === 'cat') { const m = Object.keys(FILES).filter((f) => f.startsWith(rest[0] || '')); if (m.length === 1) input.value = `cat ${m[0]}`; }
+        else if (c === 'cat') { const m = Object.keys(filesIn(cwd) || {}).filter((f) => f.startsWith(rest[0] || '')); if (m.length === 1) input.value = `cat ${m[0]}`; }
       } else if (e.key === 'Escape') toggle(false);
       e.stopPropagation();
     });
