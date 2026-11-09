@@ -1262,7 +1262,7 @@
         const { pts, km } = gc(home, pl.at);
         ctx.strokeStyle = pl.color; ctx.globalAlpha = 1; ctx.lineWidth = 1.4; ctx.setLineDash(pl.dash);
         ctx.beginPath(); polyPart(ctx, pts, ap); ctx.stroke(); ctx.setLineDash([]);
-        if (ap > 0.9 && !MINI) {
+        if (ap > 0.9 && !MINI && w >= 520) {
           const m = pts[Math.floor(pts.length / 2)], txt = `≈ ${km.toLocaleString('en')} km`;
           const ty = pl.former ? m[1] + 16 : m[1] - 12;
           ctx.font = `10px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -1283,6 +1283,7 @@
       };
       const two = (x, y, a, b, color, dir = 1, lift = 26) => {
         if (MINI) return;
+        if (w < 520) b = '';                                   // phones: one-line labels
         const lx = x + 14 * dir, ly = y - lift;
         ctx.strokeStyle = color; ctx.globalAlpha = 0.9; ctx.lineWidth = 0.75;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(lx, ly); ctx.lineTo(lx + 10 * dir, ly); ctx.stroke();
@@ -1290,7 +1291,7 @@
         const tx = lx + 14 * dir;
         ctx.font = `500 11px ${MONO}`; const wa = ctx.measureText(a).width;
         ctx.font = `10px ${MONO}`; const wb = ctx.measureText(b).width, tw = Math.max(wa, wb);
-        ctx.globalAlpha = 0.92; ctx.fillStyle = C.paper; ctx.fillRect(dir > 0 ? tx - 5 : tx - tw - 5, ly - 9, tw + 10, 32);
+        ctx.globalAlpha = 0.92; ctx.fillStyle = C.paper; ctx.fillRect(dir > 0 ? tx - 5 : tx - tw - 5, ly - 9, tw + 10, b ? 32 : 18);
         ctx.globalAlpha = 1;
         ctx.font = `500 11px ${MONO}`; ctx.fillStyle = color; ctx.fillText(a, tx, ly);
         ctx.font = `10px ${MONO}`; ctx.fillStyle = C.ink2; ctx.fillText(b, tx, ly + 14);
@@ -1387,7 +1388,7 @@
         const st = I(S0[0] - 14, S0[1] + 55, 0); label(ctx, st[0], st[1], 'Stadio Diego Armando Maradona', 1, C.ink2, true, -22);
         const rd = I(130, -12); label(ctx, rd[0], rd[1], 'Via Claudio', 1, C.ink3, false, 10);
         if (dieti) label(ctx, dieti.top[0], dieti.top[1], 'DIETI · UniNA', 1, C.ink2, true, 26);
-        if (!MINI) {
+        if (!MINI && w >= 480) {
           ctx.globalAlpha = 0.8; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
           ctx.fillText('FUORIGROTTA · NAPOLI · 40.82°N 14.19°E', 14, h - 22);
           ctx.textAlign = 'right'; ctx.fillText('schematic · not to scale', w - 14, h - 22);

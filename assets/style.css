@@ -1209,3 +1209,24 @@ em, i, .display em, .section-title em { font-style: normal; }
 .term-fab:hover .term-fab-label, .term-fab:focus-visible .term-fab-label { max-width: 90px; }
 body.console-open .term-fab { opacity: 0; pointer-events: none; transform: translateY(8px); }
 @media (prefers-reduced-motion: reduce) { .term-fab-ico i { animation: none; } }
+
+/* ── Phone pass ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .lab { grid-template-columns: minmax(0, 1fr); }
+  .lab-fig canvas { aspect-ratio: 16 / 10.5; }
+}
+@media (max-width: 600px) {
+  .stat-tiles { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .stat-tiles > div { padding: 12px 8px 12px 0; }
+  .stat-tiles > div + div { padding-left: 10px; }
+  .stat-tiles b { font-size: clamp(22px, 7vw, 30px) !important; }
+  .stat-tiles span { font-size: 10.5px; }
+  .team-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .team-stats > div { padding: 12px 8px 12px 0; }
+  .team-stats > div + div { padding-left: 10px; }
+  .team-stats b { font-size: 30px !important; }
+  .team-stats span { font-size: 10.5px; }
+  .card-fig figcaption, .gen-fig figcaption, .post-cover figcaption { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .card-fig figcaption span:last-child { text-align: left; }
+  .places-fig canvas { aspect-ratio: 16 / 10; }
+}
