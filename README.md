@@ -52,6 +52,7 @@ Start a new post by copying `content/posts/_template.md`.
 | Terminal | `::: terminal title` (lines starting with `$`, `off`, `def`, `✓` are coloured) |
 | Code | ```` ```python title="file.py" ```` |
 | Generated figure | `::: figure network` + caption |
+| Calculator | `::: calculator monthly=200 years=40 rate=5 age=25` + caption (interactive compound-growth chart) |
 | Columns | `::: columns` with `\|\|\|` separators |
 | Contents | `::: toc` + `:::` |
 | Divider | `***` (ornament) or `---` (rule) |

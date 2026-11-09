@@ -1230,3 +1230,26 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
   .card-fig figcaption span:last-child { text-align: left; }
   .places-fig canvas { aspect-ratio: 16 / 10; }
 }
+
+/* Blog: interactive compound-growth calculator */
+.calc { margin-inline: 0; border: 1px solid var(--line); background: color-mix(in oklab, var(--paper-2) 50%, var(--paper)); padding: 18px 18px 14px; }
+@media (min-width: 900px) { .calc { margin-inline: -60px; } }
+.calc-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 20px; font-size: 11px; color: var(--ink-3); }
+.calc-controls label { display: flex; flex-direction: column; gap: 8px; }
+.calc-controls label > span { display: flex; justify-content: space-between; letter-spacing: .04em; text-transform: uppercase; }
+.calc-controls b { color: var(--ink); font-weight: 500; text-transform: none; }
+.calc input[type=range] { width: 100%; accent-color: var(--accent); }
+.calc-check { grid-column: 1 / -1; flex-direction: row !important; align-items: center; gap: 8px !important; text-transform: none; color: var(--ink-2); font-size: 12px; }
+.calc-check input { accent-color: var(--accent); }
+.calc canvas { display: block; width: 100%; aspect-ratio: 16 / 7.5; margin-top: 16px; cursor: crosshair; }
+.calc-out { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 10px 0 0; border-top: 1px solid var(--line); }
+.calc-out > div { padding: 12px 10px 0 0; }
+.calc-out dt { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.calc-out dd { margin: 4px 0 0; font: 700 clamp(15px, 1.8vw, 20px)/1.2 var(--serif); letter-spacing: -0.03em; color: var(--ink); }
+.calc-out dd.r { color: var(--accent); } .calc-out dd.b { color: var(--blue); }
+.calc figcaption { display: flex; gap: 12px; margin-top: 14px; font-size: 11px; color: var(--ink-3); }
+.calc figcaption span { color: var(--accent); flex: none; }
+@media (max-width: 600px) {
+  .calc-controls, .calc-out { grid-template-columns: 1fr 1fr; }
+  .calc canvas { aspect-ratio: 4 / 3; }
+}

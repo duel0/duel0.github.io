@@ -1397,6 +1397,58 @@
         }
       }
     },
+    // O — compound growth: contributions staircase vs portfolio curve, with a drawdown.
+    compound(ctx, w, h, p, rnd) {
+      const L = 46, R = w - 18, T = 26, B = h - 34, Y = 40;
+      const X = (t) => L + (R - L) * (t / Y);
+      // simulate: monthly contributions, ~6%/yr with noise and one crash
+      const crashAt = 12 + Math.floor(rnd() * 8), pts = [], paid = [];
+      let v = 0, c = 0;
+      for (let m = 0; m <= Y * 12; m++) {
+        const yr = m / 12;
+        let r = 0.06 / 12 + (rnd() - 0.5) * 0.03;
+        if (Math.abs(yr - crashAt) < 0.5) r -= 0.055;
+        v = v * (1 + r) + 1; c += 1;
+        if (m % 3 === 0) { pts.push([yr, v]); paid.push([yr, c]); }
+      }
+      const max = Math.max(...pts.map((q) => q[1])) * 1.08;
+      const Yp = (val) => B - (B - T) * (val / max);
+      // axes + grid
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.12; ctx.beginPath();
+      for (let t = 0; t <= Y; t += 10) { ctx.moveTo(X(t), T); ctx.lineTo(X(t), B); }
+      for (let k = 1; k <= 4; k++) { const y = B - (B - T) * k / 4; ctx.moveTo(L, y); ctx.lineTo(R, y); }
+      ctx.stroke();
+      ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, B); ctx.lineTo(R, B); ctx.stroke();
+      if (!MINI) {
+        ctx.fillStyle = C.ink3; ctx.globalAlpha = 0.9; ctx.font = `9.5px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let t = 0; t <= Y; t += 10) ctx.fillText(`${25 + t}`, X(t), B + 6);
+      }
+      const n = Math.max(2, Math.floor(pts.length * p));
+      // contributions: hatched area + stair line
+      ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), B);
+      paid.slice(0, n).forEach(([t, val]) => ctx.lineTo(X(t), Yp(val)));
+      ctx.lineTo(X(paid[n - 1][0]), B); ctx.closePath(); ctx.clip();
+      ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.35; ctx.lineWidth = 0.7; ctx.beginPath();
+      for (let x = L - h; x < R; x += 6) { ctx.moveTo(x, B); ctx.lineTo(x + h, B - h); }
+      ctx.stroke(); ctx.restore();
+      ctx.strokeStyle = C.blue; ctx.globalAlpha = 1; ctx.lineWidth = 1.2; ctx.beginPath();
+      paid.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val)))); ctx.stroke();
+      // portfolio: growth fill + line
+      ctx.fillStyle = C.accent; ctx.globalAlpha = 0.08; ctx.beginPath();
+      pts.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val))));
+      for (let i = n - 1; i >= 0; i--) ctx.lineTo(X(paid[i][0]), Yp(paid[i][1]));
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = C.accent; ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.beginPath();
+      pts.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val)))); ctx.stroke();
+      const head = pts[n - 1]; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(X(head[0]), Yp(head[1]), 3, 0, Math.PI * 2); ctx.fill();
+      if (p > 0.95) {
+        const ci = pts.findIndex((q) => q[0] >= crashAt), cq = pts[Math.min(ci + 2, pts.length - 1)];
+        label(ctx, X(cq[0]), Yp(cq[1]), 'drawdown', 1, C.ink2, true, -22);
+        const e = pts[pts.length - 1], ep = paid[paid.length - 1];
+        label(ctx, X(e[0]) - 4, Yp(e[1]), 'growth', -1, C.accent, true, 14);
+        label(ctx, X(ep[0]) - 4, Yp(ep[1]), 'paid in', -1, C.blue, true, -16);
+      }
+    },
   };
 
   // Draw the first `p` fraction (by length) of a polyline.
@@ -1431,7 +1483,7 @@
         const noise = makeNoise(seed);
         const sc = 1 / 95;
         ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7;
-        ctx.globalAlpha = { evaluation: 0.12, signal: 0.07, network: 0.14, ad: 0.12, glyph: 0.05, 'glyph-red': 0.05, map: 0, campus: 0.06 }[kind] ?? 0.26;
+        ctx.globalAlpha = { evaluation: 0.12, signal: 0.07, network: 0.14, ad: 0.12, glyph: 0.05, 'glyph-red': 0.05, map: 0, campus: 0.06, compound: 0.07 }[kind] ?? 0.26;
         drawContours(ctx, w, h, (x, y) => noise(x * sc + seed % 97, y * sc), range(0.18, 0.86, mini ? 0.07 : 0.045), mini ? 9 : 7);
         // Frame.
         ctx.globalAlpha = 0.6; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.75;
@@ -1525,6 +1577,99 @@
     }
   };
 
-  const boot = () => { readColors(); initBackground(); initScene(); initFigures(); };
+
+  /* ══════════════════════════════════════════════════════════
+     4. CALCULATOR — interactive compound-growth explorer for posts.
+        Every number comes from the reader; nothing is a recommendation.
+     ══════════════════════════════════════════════════════════ */
+  const initCalc = () => {
+    const eur = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    document.querySelectorAll('.calc').forEach((fig) => {
+      const canvas = fig.querySelector('canvas'), out = fig.querySelector('.calc-out');
+      const inputs = Object.fromEntries([...fig.querySelectorAll('input')].map((i) => [i.name, i]));
+      let series = [], hoverX = null;
+      const sim = () => {
+        const v = (k) => Number(inputs[k].value);
+        const monthly = v('monthly'), rate = v('rate') / 100, years = v('years'), start = v('start'), age = v('age');
+        const crash = inputs.crash.checked, crashYear = Math.round(years * 0.4);
+        const rm = Math.pow(1 + rate, 1 / 12) - 1;
+        let value = start, paid = start; const s = [{ t: 0, value, paid }];
+        for (let m = 1; m <= years * 12; m++) {
+          value = value * (1 + rm) + monthly; paid += monthly;
+          if (crash && m === crashYear * 12) value *= 0.65;           // one −35% shock
+          if (m % 1 === 0) s.push({ t: m / 12, value, paid });
+        }
+        fig.querySelectorAll('[data-show]').forEach((o) => {
+          const k = o.dataset.show; o.textContent = k === 'rate' ? `${v(k).toFixed(1)}%` : k === 'monthly' || k === 'start' ? eur.format(v(k)) : String(v(k));
+        });
+        const last = s[s.length - 1];
+        out.innerHTML = `<div><dt>Paid in</dt><dd class="b">${eur.format(last.paid)}</dd></div>
+          <div><dt>Value at ${age + years}</dt><dd class="r">${eur.format(last.value)}</dd></div>
+          <div><dt>Growth</dt><dd>${eur.format(last.value - last.paid)}</dd></div>
+          <div><dt>Multiple</dt><dd>${(last.value / Math.max(1, last.paid)).toFixed(2)}×</dd></div>`;
+        return { s, age, years, crash, crashYear };
+      };
+      let model = sim();
+      const render = () => {
+        const { ctx, w, h } = setupCanvas(canvas);
+        ctx.clearRect(0, 0, w, h); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        const { s, age, years, crash, crashYear } = model;
+        const L = 64, R = w - 16, T = 18, B = h - 30;
+        const max = Math.max(...s.map((q) => q.value)) * 1.06 || 1;
+        const X = (t) => L + (R - L) * (t / years), Y = (v) => B - (B - T) * (v / max);
+        // grid
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.1; ctx.beginPath();
+        const step = years <= 15 ? 5 : 10;
+        for (let t = 0; t <= years; t += step) { ctx.moveTo(X(t), T); ctx.lineTo(X(t), B); }
+        for (let k = 1; k <= 4; k++) { const y = B - (B - T) * k / 4; ctx.moveTo(L, y); ctx.lineTo(R, y); }
+        ctx.stroke();
+        ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, B); ctx.lineTo(R, B); ctx.stroke();
+        ctx.globalAlpha = 1; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let t = 0; t <= years; t += step) ctx.fillText(`${age + t}`, X(t), B + 7);
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        const short = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+        for (let k = 0; k <= 4; k++) ctx.fillText(`€${short.format(max * k / 4)}`, L - 8, B - (B - T) * k / 4);
+        // paid-in area (blue hatch) + line
+        ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), B); s.forEach((q) => ctx.lineTo(X(q.t), Y(q.paid))); ctx.lineTo(X(years), B); ctx.closePath(); ctx.clip();
+        ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.3; ctx.lineWidth = 0.7; ctx.beginPath();
+        for (let x = L - h; x < R; x += 6) { ctx.moveTo(x, B); ctx.lineTo(x + h, B - h); }
+        ctx.stroke(); ctx.restore();
+        ctx.strokeStyle = C.blue; ctx.lineWidth = 1.3; ctx.globalAlpha = 1; ctx.beginPath();
+        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.paid)) : ctx.moveTo(X(q.t), Y(q.paid)))); ctx.stroke();
+        // growth fill + value line
+        ctx.fillStyle = C.accent; ctx.globalAlpha = 0.09; ctx.beginPath();
+        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.value)) : ctx.moveTo(X(q.t), Y(q.value))));
+        for (let i = s.length - 1; i >= 0; i--) ctx.lineTo(X(s[i].t), Y(s[i].paid));
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = C.accent; ctx.globalAlpha = 1; ctx.lineWidth = 1.8; ctx.beginPath();
+        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.value)) : ctx.moveTo(X(q.t), Y(q.value)))); ctx.stroke();
+        if (crash) { const q = s[crashYear * 12]; if (q) label(ctx, X(q.t), Y(q.value), '−35% crash', 1, C.ink2, true, -24); }
+        // hover readout
+        if (hoverX != null && hoverX >= L && hoverX <= R) {
+          const t = Math.round(((hoverX - L) / (R - L)) * years * 12) / 12, q = s[Math.round(t * 12)];
+          if (q) {
+            ctx.strokeStyle = C.ink3; ctx.globalAlpha = 0.7; ctx.lineWidth = 0.8; ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(X(q.t), T); ctx.lineTo(X(q.t), B); ctx.stroke(); ctx.setLineDash([]);
+            for (const [v, col] of [[q.value, C.accent], [q.paid, C.blue]]) { ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = col; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(X(q.t), Y(v), 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+            const txt = `age ${Math.floor(age + q.t)} · ${eur.format(q.value)} (paid ${eur.format(q.paid)})`;
+            ctx.font = `10.5px ${MONO}`; const tw = ctx.measureText(txt).width;
+            const bx = Math.min(Math.max(X(q.t) - tw / 2 - 6, L), R - tw - 12);
+            ctx.globalAlpha = 0.95; ctx.fillStyle = C.paper; ctx.fillRect(bx, T, tw + 12, 20);
+            ctx.strokeStyle = C.line || C.ink3; ctx.globalAlpha = 0.5; ctx.strokeRect(bx + .5, T + .5, tw + 11, 19);
+            ctx.globalAlpha = 1; ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(txt, bx + 6, T + 10);
+          }
+        }
+      };
+      Object.values(inputs).forEach((i) => i.addEventListener('input', () => { model = sim(); render(); }));
+      canvas.addEventListener('pointermove', (e) => { hoverX = e.clientX - canvas.getBoundingClientRect().left; render(); });
+      canvas.addEventListener('pointerleave', () => { hoverX = null; render(); });
+      new ResizeObserver(render).observe(canvas);
+      onTheme.push(render);
+      render();
+    });
+  };
+
+  const boot = () => { readColors(); initBackground(); initScene(); initFigures(); initCalc(); };
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
 })();

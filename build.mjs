@@ -25,7 +25,8 @@ const SITE = {
   author: 'Francesco Balassone',
   description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs — and everything that comes to my mind.',
 };
-const COVER_STYLES = ['adversary', 'network', 'signal', 'offense', 'evaluation', 'terrain'];
+const COVER_STYLES = ['adversary', 'network', 'signal', 'offense', 'evaluation', 'terrain'];   // auto-picked
+const EXTRA_COVERS = ['compound'];                                                              // opt-in via cover:
 
 const args = new Set(process.argv.slice(2));
 const INCLUDE_DRAFTS = args.has('--drafts');
@@ -278,6 +279,25 @@ function container(type, arg, body, ctx) {
       ctx.fig += 1;
       return `<figure class="gen-fig"><canvas data-fig="${style}" data-seed="${hash(body + style) % 9973 + 1}" aria-hidden="true"></canvas><figcaption class="mono"><span>FIG. ${String(ctx.fig).padStart(2, '0')}</span>${inline(body.trim())}</figcaption></figure>`;
     }
+    case 'calculator': {
+      const o = Object.fromEntries(arg.split(/\s+/).filter(Boolean).map((kv) => kv.split('=')));
+      const n = (k, d) => (o[k] !== undefined && !Number.isNaN(Number(o[k])) ? Number(o[k]) : d);
+      const slider = (name, label, min, max, step, val) => `<label><span>${label} <b data-show="${name}"></b></span><input type="range" name="${name}" min="${min}" max="${max}" step="${step}" value="${val}"></label>`;
+      ctx.fig += 1;
+      return `<figure class="calc">
+  <div class="calc-controls mono">
+    ${slider('monthly', 'Monthly', 0, 2000, 25, n('monthly', 200))}
+    ${slider('years', 'Years', 5, 50, 1, n('years', 40))}
+    ${slider('rate', 'Return / yr', 0, 12, 0.5, n('rate', 5))}
+    ${slider('start', 'Starting amount', 0, 50000, 500, n('start', 0))}
+    <input type="hidden" name="age" value="${n('age', 25)}">
+    <label class="calc-check"><input type="checkbox" name="crash"${o.crash === 'on' ? ' checked' : ''}> Add a −35% crash</label>
+  </div>
+  <canvas aria-label="Chart of money paid in versus portfolio value over time"></canvas>
+  <dl class="calc-out mono"></dl>
+  <figcaption class="mono"><span>FIG. ${String(ctx.fig).padStart(2, '0')}</span>${inline(body.trim() || 'Illustrative only — fixed return, no fees, taxes or inflation. Not financial advice.')}</figcaption>
+</figure>`;
+    }
     case 'columns': {
       const cols = body.split(/^\|\|\|\s*$/m);
       return `<div class="columns columns-${cols.length}">${cols.map((c) => `<div>${render(c, ctx)}</div>`).join('')}</div>`;
@@ -449,7 +469,7 @@ function loadPosts() {
         minutes: readTime(body),
         category,
         cat: slugify(category),
-        cover: COVER_STYLES.includes(data.cover) ? data.cover : COVER_STYLES[h % COVER_STYLES.length],
+        cover: [...COVER_STYLES, ...EXTRA_COVERS].includes(data.cover) ? data.cover : COVER_STYLES[h % COVER_STYLES.length],
         seed: Number(data.seed) || (h % 9973) + 1,
       };
     })
