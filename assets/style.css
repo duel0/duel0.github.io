@@ -1256,3 +1256,24 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 /* @duel0 signature in the footer */
 .site-footer .handle { margin-left: 6px; color: var(--term-green); }
 .site-footer .handle:hover { color: var(--accent); }
+
+/* napwnli · SSC Napoli palette (azzurro #00A7E1, navy #13294B) */
+#team[data-palette="napoli"] { --accent: #00a7e1; --napoli-navy: #13294b; --napoli-panel: #131f31; }
+#team .team {
+  position: relative; overflow: hidden; padding: clamp(22px, 3vw, 36px);
+  background: var(--napoli-panel); border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--napoli-navy)); border-radius: 4px;
+}
+#team .team::before, #team .team::after {          /* the crest's double ring */
+  content: ""; position: absolute; border-radius: 50%; pointer-events: none;
+  border: 2px solid color-mix(in oklab, var(--accent) 22%, transparent);
+}
+#team .team::before { width: 520px; height: 520px; right: -170px; top: -190px; }
+#team .team::after { width: 400px; height: 400px; right: -110px; top: -130px; border-width: 1px; }
+#team .team > * { position: relative; z-index: 1; }
+#team .team-stats { border-top-color: color-mix(in oklab, var(--accent) 45%, var(--napoli-navy)); border-bottom-color: color-mix(in oklab, var(--accent) 25%, var(--napoli-navy)); }
+#team .team-stats > div + div { border-left-color: color-mix(in oklab, var(--accent) 25%, var(--napoli-navy)); }
+#team .card-refs a { border-color: color-mix(in oklab, var(--accent) 30%, var(--napoli-navy)); }
+#team .card-refs a:hover { border-color: var(--accent); color: var(--accent); }
+#team .team-fig canvas { background: var(--napoli-panel); border-color: color-mix(in oklab, var(--accent) 30%, var(--napoli-navy)); }
+#team .team-fig figcaption span:first-child { color: var(--accent); }
+#team .team-brand:hover .team-name { color: var(--accent); }

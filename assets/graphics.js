@@ -1504,6 +1504,9 @@
     }
   }
 
+  // Per-section palettes (e.g. the napwnli block wears SSC Napoli colours).
+  const PALETTES = { napoli: { accent: '#00a7e1', blue: '#ecebe4', paper: '#131f31' } };
+
   const initFigures = () => {
     document.querySelectorAll('canvas[data-fig]').forEach((canvas, idx) => {
       const kind = canvas.dataset.fig;
@@ -1529,7 +1532,11 @@
         // Overlay.
         ctx.globalAlpha = 1;
         MINI = mini;
+        const pal = PALETTES[canvas.closest('[data-palette]')?.dataset.palette];
+        const saved = pal ? { ...C } : null;
+        if (pal) Object.assign(C, pal);
         FIGS[kind]?.(ctx, w, h, progress, mulberry32(seed * 101));
+        if (saved) Object.assign(C, saved);
         MINI = false;
       };
 
