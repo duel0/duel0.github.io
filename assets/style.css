@@ -1008,7 +1008,7 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .logos a { display: flex; align-items: center; gap: 10px; text-decoration: none; opacity: .72; transition: opacity .2s; }
 .logos a:hover { opacity: 1; }
 .logos img { display: block; width: auto; }
-.logo-cr { height: 30px; }
+.logo-cr { height: 38px; }
 .logo-alias { height: 21px; }
 .logo-unina { height: 40px; }
 .logo-napwnli img { height: 38px; }
@@ -1190,3 +1190,7 @@ em, i, .display em, .section-title em { font-style: normal; }
 @media (prefers-reduced-motion: reduce) { .h1-cursor { animation: none; } }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .bookmark-text > span:not(.bookmark-url) { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cl.art { white-space: pre; overflow: visible; line-height: 1.2; }
+.console-out { overflow-x: auto; }
+.cl.art.block { line-height: 1.02; letter-spacing: 0; margin: 6px 0; }
+.console, .term pre, .codeblock pre, .fetch, .logwin-body { font-variant-ligatures: none; }

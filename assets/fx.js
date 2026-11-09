@@ -227,6 +227,8 @@
     const history = []; let hi = 0, opened = false;
 
     const print = (lines, cls = '') => {
+      if (capture) { [].concat(lines).forEach((l) => capture.push(...String(typeof l === 'object' ? (l.pre || '') + l.text : l).split('\n'))); return; }
+      if (/\bart\b/.test(cls)) { const p = el('div', { class: `cl ${cls}` }); p.textContent = [].concat(lines).join('\n'); out.append(p); out.scrollTop = out.scrollHeight; return; }
       [].concat(lines).forEach((l) => {
         const p = el('div', { class: `cl ${cls}` });
         if (typeof l === 'object' && l.href) {
@@ -239,11 +241,130 @@
     };
     const sha256 = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');
 
+    /* ── toy helpers ─────────────────────────────────────── */
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const pick = (a) => a[(Math.random() * a.length) | 0];
+    const FORTUNES = [
+      'The most secure system is the one you haven\'t deployed yet.',
+      'Every "temporary" firewall rule is permanent.',
+      'If the attacker is faster than your patch cycle, the attacker is your patch cycle.',
+      'Defenders need to be right every time. So do attackers, eventually. Log everything.',
+      'An agent with a shell is a shell with opinions.',
+      'There are two kinds of networks: compromised, and not yet aware.',
+      'It\'s not a bug, it\'s an undocumented attack surface.',
+      'The flag is never where you looked first. Look again.',
+      'Your password is in a wordlist. Your passphrase might not be.',
+      'Assume breach. Then make breach boring.',
+      'Read the logs. The logs read you back.',
+      'The donkey does not hurry, yet the donkey always gets the flag.',
+    ];
+    const bubble = (text) => {
+      const words = String(text).replace(/\s+/g, ' ').trim().split(' '), lines = []; let cur = '';
+      for (const w of words) { if ((cur + ' ' + w).trim().length > 38) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); }
+      if (cur) lines.push(cur);
+      const W = Math.max(...lines.map((l) => l.length));
+      const mid = lines.length === 1 ? [`< ${lines[0]} >`] : lines.map((l, i) => {
+        const [a, b] = i === 0 ? ['/', '\\'] : i === lines.length - 1 ? ['\\', '/'] : ['|', '|'];
+        return `${a} ${l.padEnd(W)} ${b}`;
+      });
+      return [' ' + '_'.repeat(W + 2), ...mid, ' ' + '-'.repeat(W + 2)];
+    };
+    const COW = [
+      '        \\   ^__^',
+      '         \\  (oo)\\_______',
+      '            (__)\\       )\\/\\',
+      '                ||----w |',
+      '                ||     ||',
+    ];
+    const DONKEY = [
+      '        \\    /\\  /\\',
+      '         \\  / / / /',
+      '           ( (_( (___',
+      '           /  o       \\___',
+      '          (_.         ____)  napwnli',
+      '            \\_______/',
+    ];
+    // 5-row block font (3–5 cols wide)
+    const FONT = {
+      A: ['###', '# #', '###', '# #', '# #'], B: ['## ', '# #', '## ', '# #', '## '], C: ['###', '#  ', '#  ', '#  ', '###'],
+      D: ['## ', '# #', '# #', '# #', '## '], E: ['###', '#  ', '## ', '#  ', '###'], F: ['###', '#  ', '## ', '#  ', '#  '],
+      G: ['###', '#  ', '# #', '# #', '###'], H: ['# #', '# #', '###', '# #', '# #'], I: ['###', ' # ', ' # ', ' # ', '###'],
+      J: ['  #', '  #', '  #', '# #', '###'], K: ['# #', '# #', '## ', '# #', '# #'], L: ['#  ', '#  ', '#  ', '#  ', '###'],
+      M: ['#   #', '## ##', '# # #', '#   #', '#   #'], N: ['#  #', '## #', '# ##', '#  #', '#  #'], O: ['###', '# #', '# #', '# #', '###'],
+      P: ['###', '# #', '###', '#  ', '#  '], Q: ['###', '# #', '# #', '###', '  #'], R: ['###', '# #', '## ', '# #', '# #'],
+      S: ['###', '#  ', '###', '  #', '###'], T: ['###', ' # ', ' # ', ' # ', ' # '], U: ['# #', '# #', '# #', '# #', '###'],
+      V: ['# #', '# #', '# #', '# #', ' # '], W: ['#   #', '#   #', '# # #', '## ##', '#   #'], X: ['# #', '# #', ' # ', '# #', '# #'],
+      Y: ['# #', '# #', ' # ', ' # ', ' # '], Z: ['###', '  #', ' # ', '#  ', '###'],
+      0: ['###', '# #', '# #', '# #', '###'], 1: [' # ', '## ', ' # ', ' # ', '###'], 2: ['###', '  #', '###', '#  ', '###'],
+      3: ['###', '  #', '###', '  #', '###'], 4: ['# #', '# #', '###', '  #', '  #'], 5: ['###', '#  ', '###', '  #', '###'],
+      6: ['###', '#  ', '###', '# #', '###'], 7: ['###', '  #', '  #', '  #', '  #'], 8: ['###', '# #', '###', '# #', '###'],
+      9: ['###', '# #', '###', '  #', '###'], ' ': ['  ', '  ', '  ', '  ', '  '], '!': ['#', '#', '#', ' ', '#'], '.': [' ', ' ', ' ', ' ', '#'],
+      '?': ['###', '  #', ' ##', '   ', ' # '], '-': ['   ', '   ', '###', '   ', '   '], '_': ['   ', '   ', '   ', '   ', '###'],
+      '{': [' ##', ' # ', '## ', ' # ', ' ##'], '}': ['## ', ' # ', ' ##', ' # ', '## '], '@': ['####', '#  #', '# ##', '#   ', '####'],
+    };
+    const figlet = (text) => {
+      const chars = [...String(text).toUpperCase().slice(0, 14)].map((c) => FONT[c] || FONT['?']);
+      return [0, 1, 2, 3, 4].map((r) => chars.map((g) => g[r].replace(/#/g, '█')).join(' '));
+    };
+    const rainbow = (lines) => {
+      const hues = ['#ff5f4f', '#f0b36a', '#f6d58e', '#8ad19b', '#6fa6ff', '#c6a4ff'];
+      lines.forEach((line, li) => {
+        const p = el('div', { class: 'cl art' });
+        [...String(line)].forEach((ch, i) => { const s = el('span'); s.textContent = ch; s.style.color = hues[(i + li * 2) % hues.length]; p.append(s); });
+        if (capture) capture.push(String(line)); else out.append(p);
+      });
+      out.scrollTop = out.scrollHeight;
+    };
+    const neofetch = () => {
+      const art = ['█████▒▒   ', '██    ▒▒  ', '██    ▒▒  ', '████████  ', '██     ███', '██      ██', '████████ ●'];
+      const info = ['visitor@duel0', '─────────────', 'OS: napwnliOS (Napoli)', 'Host: duel0.github.io', `Shell: ${isRoot() ? 'bash (root)' : 'rbash'}`, 'Theme: offense ↔ defense', `Uptime: ${Math.floor(performance.now() / 60000)} min`];
+      return art.map((a, i) => `${a}  ${info[i] || ''}`);
+    };
+    const animate = async (frames, ms, cls) => {
+      if (capture) { capture.push(...frames[frames.length - 1]); return; }
+      const p = el('div', { class: `cl ${cls}` }); out.append(p);
+      for (const f of reduceMotion ? [frames[frames.length - 1]] : frames) { p.textContent = f.join('\n'); out.scrollTop = out.scrollHeight; await sleep(ms); }
+      p.remove();
+    };
+    const slFrames = () => {
+      const T = [
+        '      ====        ________                ___________ ',
+        '  _D _|  |_______/        \\__I_I_____===__|_________| ',
+        '   |(_)---  |   H\\________/ |   |        =|___ ___|   ',
+        '   /     |  |   H  |  |     |   |         ||_| |_||   ',
+        '  |      |  |   H  |__--------------------| [___] |   ',
+        '  | ________|___H__/__|_____/[][]~\\_______|       |   ',
+        '  |/ |   |-----------I_____I [][] []  D   |=======|__ ',
+        '__/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__ ',
+        ' |/-=|___|=    ||    ||    ||    |_____/~\\___/        ',
+        '  \\_/      \\O=====O=====O=====O_/      \\_/            ',
+      ];
+      const W = 62, frames = [];
+      for (let x = W; x > -T[0].length; x -= 2) frames.push(T.map((row) => (x > 0 ? ' '.repeat(x) + row : row.slice(-x)).slice(0, W)));
+      frames.push(['', '(the train has left the station.)']);
+      return frames;
+    };
+    const matrixFrames = () => {
+      const W = 56, H = 12, glyphs = 'ｱｲｳｴｵｶｷｸｹｺ01ﾅﾆﾇﾈﾉ$#%&napwnli', drops = Array.from({ length: W }, () => -Math.floor(Math.random() * H * 2));
+      const grid = Array.from({ length: H }, () => Array(W).fill(' ')), frames = [];
+      for (let f = 0; f < 46; f++) {
+        for (let r = H - 1; r > 0; r--) for (let c = 0; c < W; c++) if (Math.random() < 0.08) grid[r][c] = ' ';
+        drops.forEach((d, c) => { if (d >= 0 && d < H) grid[d][c] = glyphs[(Math.random() * glyphs.length) | 0]; drops[c] = d >= H + 4 ? -Math.floor(Math.random() * H) : d + 1; });
+        frames.push(grid.map((r) => r.join('')));
+      }
+      frames.push(['wake up, visitor…  follow the white donkey.']);
+      return frames;
+    };
+    let capture = null;
+
     const COMMANDS = {
       help: () => print([
         'commands:',
         '  whoami · about · papers · ctf · blog · contact · links',
         '  ls [-a] · cat <file> · clear · history · date · exit',
+        '  fun:  cowsay · donkeysay · fortune · figlet · lolcat · sl · cmatrix',
+        '        neofetch · ping · hack · uname -a · ps · uptime · echo · man',
+        '  pipes work too:  fortune | cowsay | lolcat',
         '  redteam         — you probably shouldn\'t.',
         '  submit <flag>   — found something? (there is a flag hidden on this site)',
       ], 'dim'),
@@ -265,7 +386,6 @@
       clear: () => { out.innerHTML = ''; },
       history: () => print(history.map((h, i) => `${String(i + 1).padStart(3)}  ${h}`)),
       date: () => print(new Date().toString()),
-      exit: () => toggle(false),
       sudo: (args) => {
         if (args.join(' ').startsWith('hire')) print(['[sudo] password for visitor: ********', 'Sorry, try again. Or skip the exploit and just ask:'], 'red'), COMMANDS.contact();
         else print('visitor is not in the sudoers file. This incident will be reported. 🙃', 'red');
@@ -297,16 +417,70 @@
         } else print('✕ wrong flag. the format is flag{...}', 'red');
       },
     };
-    const NAMES = Object.keys(COMMANDS);
+    Object.assign(COMMANDS, {
+      /* ── toys ─────────────────────────────────────────── */
+      echo: (args, stdin) => print(args.length ? args.join(' ') : (stdin || []).join('\n')),
+      pwd: () => print('/home/visitor'),
+      cd: (args) => print(args[0] && !['~', '.', '/home/visitor'].includes(args[0]) ? `cd: ${args[0]}: Permission denied (nice try)` : '', args[0] ? 'red' : ''),
+      uname: (args) => print(args.includes('-a') ? 'napwnliOS 6.6.6-duel0 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Donkey' : 'napwnliOS'),
+      uptime: () => { const s = Math.floor(performance.now() / 1000); print(` ${new Date().toTimeString().slice(0, 8)} up ${Math.floor(s / 60)} min, 1 user, load average: 0.42, 0.13, 0.37`); },
+      ps: () => print([
+        '  PID TTY          TIME CMD',
+        '    1 ?        00:00:01 init',
+        '  404 ?        00:00:13 offensive-agent --quiet',
+        '  405 ?        00:00:21 defensive-agent --watch',
+        ` 1337 pts/0    00:00:00 ${isRoot() ? 'bash' : 'rbash'}`,
+        ' 1338 pts/0    00:00:00 ps',
+      ]),
+      neofetch: () => print(neofetch(), 'art'),
+      fortune: () => print(pick(FORTUNES)),
+      cowsay: (args, stdin) => print(bubble(args.length ? args.join(' ') : (stdin || []).join(' ') || 'moo.').concat(COW), 'art'),
+      donkeysay: (args, stdin) => print(bubble(args.length ? args.join(' ') : (stdin || []).join(' ') || 'hee-haw. try harder.').concat(DONKEY), 'art'),
+      figlet: (args, stdin) => print(figlet(args.length ? args.join(' ') : (stdin || []).join(' ') || 'napwnli'), 'art block'),
+      banner: (args, stdin) => COMMANDS.figlet(args, stdin),
+      lolcat: (args, stdin) => rainbow(args.length ? [args.join(' ')] : stdin || ['meow? (try: fortune | cowsay | lolcat)']),
+      ping: async (args) => {
+        const host = args.find((a) => !a.startsWith('-')) || '8.8.8.8';
+        print(`PING ${host} (${/^\d/.test(host) ? host : '93.184.215.14'}) 56(84) bytes of data.`);
+        for (let i = 1; i <= 4; i++) {
+          await sleep(reduceMotion ? 0 : 420);
+          print(`64 bytes from ${host}: icmp_seq=${i} ttl=117 time=${(8 + Math.random() * 14).toFixed(1)} ms`);
+        }
+        print([`--- ${host} ping statistics ---`, '4 packets transmitted, 4 received, 0% packet loss', '(simulated — browsers can\'t send ICMP. the donkey pinged it for you.)'], 'dim');
+      },
+      sl: () => animate(slFrames(), 70, 'art'),
+      cmatrix: () => animate(matrixFrames(), 70, 'green art'),
+      matrix: () => COMMANDS.cmatrix(),
+      hack: async () => {
+        const lines = ['[*] bypassing firewall… (it was turned off)', '[*] downloading more RAM… 512 GB ✓', '[*] enhancing… enhancing… ENHANCE', '[*] reversing the polarity of the neutron flow', '[*] hacking the mainframe with two keyboards', '[+] access granted. (no it isn\'t.)'];
+        for (const l of lines) { await sleep(reduceMotion ? 0 : 380); print(l, l.startsWith('[+]') ? 'green' : 'red'); }
+      },
+      vim: () => print(['~', '~', '~', '"you are now stuck in vim."', 'just kidding — this is not a real editor. type :q! anyway for the vibes.'], 'dim'),
+      vi: () => COMMANDS.vim(), nano: () => COMMANDS.vim(), emacs: () => print('emacs: nice OS, lacks a decent editor.', 'dim'),
+      ':q!': () => print('you escaped. most people never do.', 'green'),
+      coffee: () => print('HTTP/1.1 418 I\'m a teapot', 'red'),
+      yes: () => print(Array(12).fill('y').concat('^C'), 'dim'),
+      man: ([c]) => print(c && COMMANDS[c] ? `${c}(1) — it does what it says. probably. see \`help\`.` : 'What manual page do you want?\nFor example, try \'man cowsay\'.'),
+      exit: () => toggle(false),
+    });
+    const NAMES = Object.keys(COMMANDS).filter((n) => /^[a-z]/.test(n));
 
     const run = async (raw) => {
       const line = raw.trim();
       print(`${ps.textContent} ${line}`, 'cmd');
       if (!line) return;
       history.push(line); hi = history.length;
-      const [cmd, ...args] = line.split(/\s+/);
-      const fn = COMMANDS[cmd.toLowerCase()];
-      if (fn) await fn(args); else print(`${cmd}: command not found. try \`help\``, 'red');
+      const stages = line.split('|').map((x) => x.trim()).filter(Boolean);
+      let stdin = null;
+      for (let i = 0; i < stages.length; i++) {
+        const [cmd, ...args] = stages[i].split(/\s+/);
+        const fn = COMMANDS[cmd] || COMMANDS[cmd.toLowerCase()];
+        const last = i === stages.length - 1;
+        if (!fn) { capture = null; print(`${cmd}: command not found. try \`help\``, 'red'); return; }
+        if (!last) capture = [];
+        await fn(args, stdin);
+        if (!last) { stdin = capture; capture = null; }
+      }
     };
 
     const toggle = (force) => {
