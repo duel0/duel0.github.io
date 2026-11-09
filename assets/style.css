@@ -1063,3 +1063,18 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .tl-badge { border: 1px solid var(--line); border-radius: 50%; font-size: 9.5px; letter-spacing: .04em; color: var(--ink-2); }
 .pub-venue a { color: var(--ink-2); }
 .pub-venue a:hover { color: var(--accent); }
+
+/* Timeline: current roles read as "live" */
+.timeline li.is-now { position: relative; }
+.timeline li.is-now::before {
+  content: ""; position: absolute; left: -14px; top: 14px; bottom: 14px; width: 2px; border-radius: 2px;
+  background: linear-gradient(var(--ok), color-mix(in oklab, var(--ok) 15%, transparent));
+}
+.timeline li.is-now b { color: var(--ink); }
+.timeline li:not(.is-now) b { color: color-mix(in oklab, var(--ink) 82%, var(--paper)); }
+.tl-now {
+  display: flex; align-items: center; gap: 6px; margin-top: 6px;
+  font-style: normal; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ok);
+}
+.tl-now i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent); animation: pulse 2.2s infinite; }
+.timeline li.is-now .tl-when { color: var(--ink-2); }
