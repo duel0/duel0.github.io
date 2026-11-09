@@ -1305,6 +1305,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .ab-c { font: 400 46px/1 "Napoli", var(--sans); color: var(--accent); text-box: trim-both cap alphabetic; }
 .ab-sep { width: 1.5px; height: 32px; background: color-mix(in oklab, var(--accent) 55%, transparent); }
 .armband img { display: block; height: 40px; width: auto; }
-.armband img[src*="cybercup"] { height: 36px; margin-left: -5px; margin-right: 3px; }   /* matches the emblem's visible height (it has padding) */
+.armband img[src*="cybercup"] { height: 36px; margin-left: -5px; margin-right: 3px; }
+.armband img[src*="napwnli"] { height: 38px; filter: drop-shadow(0 0 0.6px rgba(19,41,75,.6)); }   /* sticker edge visible on white */   /* matches the emblem's visible height (it has padding) */
 .armband img[src*="cyberchallenge"] { filter: brightness(0) saturate(100%) invert(13%) sepia(36%) saturate(2400%) hue-rotate(196deg); }   /* navy on azzurro */
 @media (max-width: 900px) { .team-honours { flex-direction: column-reverse; align-items: flex-start; } }
