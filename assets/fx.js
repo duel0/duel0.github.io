@@ -510,6 +510,13 @@
       e.stopPropagation();
     });
     box.querySelector('.console-x').addEventListener('click', () => toggle(false));
+    // Clicking anywhere in the window focuses the prompt, unless it hits a link/button or selects text to copy.
+    box.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, input')) return;
+      if (String(window.getSelection() || '')) return;
+      input.focus({ preventScroll: true });
+      const n = input.value.length; input.setSelectionRange(n, n);
+    });
     document.addEventListener('keydown', (e) => {
       const t = e.target;
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;

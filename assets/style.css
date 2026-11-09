@@ -884,7 +884,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .console-bar .lights i:first-child { background: var(--term-red); }
 .console-x { margin-left: auto; font: inherit; color: var(--term-dim); background: none; border: 1px solid rgba(255,255,255,.12); border-radius: 3px; padding: 1px 7px; cursor: pointer; }
 .console-x:hover { color: var(--term-fg); }
-.console-out { flex: 1; overflow-y: auto; padding: 14px 16px 4px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.console-out { flex: 1; cursor: text; overflow-y: auto; padding: 14px 16px 4px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
 .console-out a { color: var(--term-blue); }
 .cl.cmd { color: var(--term-fg); margin-top: 6px; }
 .cl.dim { color: var(--term-dim); }
