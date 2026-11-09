@@ -22,9 +22,9 @@
   --term-blue: #7fb3ff;
   --term-green: #8ad19b;
 
-  --serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --serif: "JetBrains Mono", ui-monospace, Menlo, monospace;   /* display face (headings) */
+  --sans: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   --max: 1180px;
   --gutter: clamp(16px, 4vw, 40px);
@@ -90,7 +90,7 @@ p { margin: 0 0 1em; }
 .mono { font-family: var(--mono); }
 .wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
 .display { font-family: var(--serif); letter-spacing: -0.02em; }
-.display em, .section-title em { font-style: italic; color: var(--accent); }
+.display em, .section-title em { font-style: normal; color: var(--accent); }
 
 kbd {
   font: 500 0.72em/1 var(--mono);
@@ -170,7 +170,7 @@ kbd {
   letter-spacing: -0.03em;
   margin-bottom: 28px;
 }
-.hero h1 em { font-style: italic; color: var(--accent); }
+.hero h1 em { font-style: normal; color: var(--accent); }
 .lede { font-size: clamp(17px, 1.6vw, 19px); color: var(--ink-2); max-width: 34em; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .btn {
@@ -328,7 +328,7 @@ kbd {
 .about-lead { font: 400 clamp(22px, 2.4vw, 28px)/1.35 var(--serif) !important; color: var(--ink) !important; letter-spacing: -0.01em; }
 .pull {
   margin: 32px 0 0; padding: 4px 0 4px 20px; border-left: 2px solid var(--accent);
-  font: italic 400 clamp(20px, 2.2vw, 24px)/1.35 var(--serif); color: var(--ink); max-width: 28em;
+  font: 400 clamp(20px, 2.2vw, 24px)/1.35 var(--serif); color: var(--ink); max-width: 28em;
 }
 .timeline { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .timeline li { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
@@ -481,7 +481,7 @@ kbd {
 .stages button.is-def::after { background: var(--blue); }
 .scene-caption {
   margin: 12px 0 clamp(28px, 4vw, 44px); min-height: 1.6em;
-  font: italic 400 clamp(17px, 1.7vw, 20px)/1.4 var(--serif); color: var(--ink-2);
+  font: 400 clamp(17px, 1.7vw, 20px)/1.4 var(--serif); color: var(--ink-2);
 }
 .scene-caption::before { content: "▸ "; font-style: normal; color: var(--accent); }
 @media (max-width: 700px) {
@@ -498,7 +498,7 @@ kbd {
    ══════════════════════════════════════════════════════════════ */
 .kicker { margin: 0 0 10px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
 .badge { font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); border: 1px solid currentColor; border-radius: 999px; padding: 2px 7px 1px; }
-.posts-empty { color: var(--ink-3); font: italic 400 20px/1.4 var(--serif); }
+.posts-empty { color: var(--ink-3); font: 400 20px/1.4 var(--serif); }
 .post-meta { margin: 0; font-size: 11.5px; color: var(--ink-3); }
 
 /* Feed: featured card + rows with thumbnails */
@@ -531,7 +531,7 @@ kbd {
 /* Blog index */
 .blog-hero { padding-top: clamp(48px, 8vw, 96px); padding-bottom: clamp(32px, 5vw, 56px); border-bottom: 1px solid var(--ink); margin-bottom: 36px; }
 .blog-h1 { font: 400 clamp(56px, 10vw, 128px)/0.95 var(--serif); letter-spacing: -0.04em; margin: 0 0 18px; }
-.blog-sub { font: italic 400 clamp(19px, 2vw, 23px)/1.4 var(--serif); color: var(--ink-2); max-width: 30em; margin: 0 0 24px; }
+.blog-sub { font: 400 clamp(19px, 2vw, 23px)/1.4 var(--serif); color: var(--ink-2); max-width: 30em; margin: 0 0 24px; }
 .blog-feed { padding-bottom: clamp(56px, 8vw, 100px); }
 
 /* ── Article ──────────────────────────────────────────────── */
@@ -541,7 +541,7 @@ kbd {
 .back { display: inline-block; font-size: 12px; color: var(--ink-3); text-decoration: none; margin-bottom: 28px; }
 .back:hover { color: var(--accent); }
 .post-h1 { font: 400 clamp(38px, 6vw, 64px)/1.03 var(--serif); letter-spacing: -0.032em; margin: 0 0 16px; }
-.post-lede { font: italic 400 clamp(20px, 2.2vw, 24px)/1.4 var(--serif); color: var(--ink-2); margin: 0 0 28px; }
+.post-lede { font: 400 clamp(20px, 2.2vw, 24px)/1.4 var(--serif); color: var(--ink-2); margin: 0 0 28px; }
 .byline {
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px;
   padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
@@ -612,14 +612,14 @@ kbd {
 .prose li.done { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-3); }
 
 /* Quotes */
-.prose blockquote { margin-inline: 0; padding: 2px 0 2px 22px; border-left: 2px solid var(--ink); color: var(--ink); font: italic 400 21px/1.55 var(--serif); }
+.prose blockquote { margin-inline: 0; padding: 2px 0 2px 22px; border-left: 2px solid var(--ink); color: var(--ink); font: 400 21px/1.55 var(--serif); }
 .prose blockquote > * + * { margin-top: .8em; }
 .pullquote { margin: 2em 0 !important; text-align: center; padding: 28px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); position: relative; }
 .pullquote::before {
   content: "“"; position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
   padding: 0 14px; background: var(--paper); color: var(--accent); font: 400 56px/1 var(--serif);
 }
-.pullquote blockquote { border: 0; padding: 0; margin: 0; font: italic 400 clamp(25px, 3vw, 32px)/1.3 var(--serif); letter-spacing: -0.015em; color: var(--ink); }
+.pullquote blockquote { border: 0; padding: 0; margin: 0; font: 400 clamp(25px, 3vw, 32px)/1.3 var(--serif); letter-spacing: -0.015em; color: var(--ink); }
 .pullquote figcaption { margin-top: 16px; font-size: 11.5px; letter-spacing: .06em; color: var(--ink-3); text-transform: uppercase; }
 
 /* Callouts — technical-drawing annotation: tag on the border, hatched edge, registration mark */
@@ -750,7 +750,7 @@ kbd {
 .post-foot { margin-top: 64px; }
 .end-card { text-align: center; padding: 8px 0 36px; border-bottom: 1px solid var(--line); }
 .end-card .ornament { margin: 0 0 28px !important; }
-.end-title { font: italic 400 34px/1.1 var(--serif); letter-spacing: -0.02em; margin: 0 0 10px; }
+.end-title { font: 400 34px/1.1 var(--serif); letter-spacing: -0.02em; margin: 0 0 10px; }
 .end-sub { color: var(--ink-2); margin: 0 auto 22px; max-width: 28em; }
 .end-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; }
 .end-actions .share { margin-left: 0; }
@@ -1110,3 +1110,58 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .fetch.will-reveal .fetch-info > div, .fetch.will-reveal .fetch-art { opacity: 0; transform: translateX(-4px); }
 .fetch.is-in .fetch-info > div, .fetch.is-in .fetch-art { opacity: 1; transform: none; transition: opacity .35s ease, transform .35s ease; transition-delay: calc(var(--i, 0) * 70ms); }
 @media (max-width: 520px) { .fetch-body { grid-template-columns: minmax(0, 1fr); } .fetch-art { display: none; } }
+
+/* ══════════════════════════════════════════════════════════════
+   TYPE SYSTEM — JetBrains Mono (display) + Inter Tight (text)
+   Mono runs wide, so display sizes step down; no italics anywhere.
+   ══════════════════════════════════════════════════════════════ */
+body { font-size: 16.5px; }
+em, i, .display em, .section-title em { font-style: normal; }
+
+/* Headline: attack/defend as tags */
+.hero h1 { font: 700 clamp(32px, 4.6vw, 56px)/1.08 var(--serif); letter-spacing: -0.045em; }
+.hero h1 em { color: var(--accent); }
+.hero h1 em.def { color: var(--blue); }
+.hero h1 em::before { content: "<"; opacity: .45; }
+.hero h1 em::after { content: ">"; opacity: .45; }
+.hero-id { font: 700 clamp(24px, 2.7vw, 38px)/1 var(--serif); letter-spacing: -0.04em; }
+.hero-name i, .brand-name i { color: var(--ink-3); }
+.brand-name { font: 700 15px/1 var(--serif); letter-spacing: -0.03em; }
+
+/* Section titles: markdown heading */
+.section-title { font: 700 clamp(26px, 3.4vw, 40px)/1 var(--serif); letter-spacing: -0.04em; }
+.section-title::before { content: "## "; color: var(--ink-3); font-weight: 400; }
+.blog-h1 { font: 700 clamp(48px, 8vw, 96px)/0.95 var(--serif); letter-spacing: -0.05em; }
+.blog-h1::before { content: "# "; color: var(--ink-3); font-weight: 400; }
+
+/* Card / list titles */
+.card h3 { font: 700 19px/1.25 var(--serif); letter-spacing: -0.03em; }
+.featured-title { font: 700 clamp(20px, 2.3vw, 26px)/1.25 var(--serif); letter-spacing: -0.03em; }
+.pub-title { font: 500 clamp(15.5px, 1.5vw, 17px)/1.4 var(--serif); letter-spacing: -0.02em; }
+.feature-title { font: 700 clamp(22px, 2.6vw, 30px)/1.15 var(--serif); letter-spacing: -0.035em; }
+.row-title { font: 700 clamp(17px, 1.8vw, 20px)/1.3 var(--serif); letter-spacing: -0.03em; }
+.post-h1 { font: 700 clamp(30px, 4.6vw, 48px)/1.1 var(--serif); letter-spacing: -0.045em; }
+.nav-card b { font: 700 14px/1.35 var(--serif); letter-spacing: -0.02em; }
+.stat-tiles b, .stats dd { font-family: var(--serif); font-weight: 700; letter-spacing: -0.04em; }
+.team-stats b { font-family: "Napoli", var(--serif) !important; font-weight: 400; }
+.links a { font: 700 clamp(18px, 2vw, 22px)/1.2 var(--serif); letter-spacing: -0.03em; }
+.contact-line { font: 700 clamp(28px, 4.2vw, 50px)/1.1 var(--serif); letter-spacing: -0.045em; }
+.contact-line em { color: var(--accent); }
+
+/* Leads and quotes: text face, no italics */
+.about-lead, .team-lead, .lab-lead { font: 500 clamp(19px, 1.9vw, 22px)/1.45 var(--sans) !important; letter-spacing: -0.01em; }
+.lede, .scene-caption, .post-lede, .blog-sub, .feature-desc { font-style: normal; }
+.scene-caption { font: 400 clamp(15px, 1.4vw, 17px)/1.5 var(--sans); }
+.post-lede, .blog-sub { font: 400 clamp(17px, 1.7vw, 20px)/1.5 var(--sans); }
+.pull { font: 500 clamp(17px, 1.8vw, 20px)/1.45 var(--mono); }
+.pull::before { content: "> "; color: var(--accent); }
+.pullquote blockquote { font: 700 clamp(20px, 2.4vw, 26px)/1.35 var(--serif); letter-spacing: -0.03em; }
+.pullquote::before { font-family: var(--serif); }
+.prose { font-size: 17.5px; }
+.prose h2 { font: 700 clamp(22px, 2.6vw, 27px)/1.25 var(--serif); letter-spacing: -0.035em; }
+.prose h3 { font: 700 19px/1.3 var(--serif); letter-spacing: -0.025em; }
+.prose blockquote { font: 400 18px/1.6 var(--sans); }
+.callout-title { font: 700 16px/1.35 var(--serif) !important; letter-spacing: -0.02em; }
+.end-title { font: 700 26px/1.15 var(--serif); letter-spacing: -0.04em; }
+.posts-empty { font: 400 16px/1.5 var(--mono); }
+.lab-dark { letter-spacing: 0; }

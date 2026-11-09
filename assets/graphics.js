@@ -10,7 +10,7 @@
   'use strict';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MONO = '"Geist Mono", ui-monospace, Menlo, monospace';
+  const MONO = '"JetBrains Mono", ui-monospace, Menlo, monospace';
 
   /* ── Theme colors (re-read on theme change) ───────────────── */
   let C = {};
