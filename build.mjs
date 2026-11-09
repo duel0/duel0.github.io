@@ -38,7 +38,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const fmtDate = (d) => `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 const readTime = (text) => Math.max(1, Math.round(text.split(/\s+/).filter(Boolean).length / 220));
 const read = (p) => fs.readFileSync(p, 'utf8');
-const write = (p, s) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
+const write = (p, s) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, p.endsWith('.html') ? stamp(s) : s); };
 const fill = (tpl, vars) => tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => (k in vars ? vars[k] : ''));
 const domainOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
 
@@ -496,6 +496,19 @@ function chips(posts) {
       </div>`;
 }
 
+/* ── Cache busting ─────────────────────────────────────────────
+   GitHub Pages caches assets for 10 min; stamp CSS/JS URLs with a
+   content hash so a deploy never mixes new HTML with old CSS/JS. */
+const stampCache = new Map();
+function stamp(html) {
+  return html.replace(/((?:src|href)=")((?:\.\.\/)*|\/)?(assets\/[\w./-]+\.(?:css|js))(")/g, (m, a, pre = '', file, z) => {
+    const abs = path.join(ROOT, file);
+    if (!fs.existsSync(abs)) return m;
+    if (!stampCache.has(abs)) stampCache.set(abs, hash(read(abs)).toString(36));
+    return `${a}${pre}${file}?v=${stampCache.get(abs)}${z}`;
+  });
+}
+
 /* ── Social preview cards (Open Graph) ───────────────────────────
    `node build.mjs --og` renders a 1200×630 PNG per post (+ one for the
    site) with headless Chrome into assets/og/. The PNGs are committed, so
@@ -557,6 +570,7 @@ async function generateOg(posts) {
 /* ── Build ─────────────────────────────────────────────────────── */
 function build() {
   const t0 = Date.now();
+  stampCache.clear();
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
 
