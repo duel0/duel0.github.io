@@ -1197,16 +1197,15 @@ em, i, .display em, .section-title em { font-style: normal; }
 /* Floating terminal button */
 .term-fab {
   position: fixed; right: 20px; bottom: 20px; z-index: 75;
-  display: inline-flex; align-items: center; gap: 0; height: 46px; padding: 0 14px;
+  display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px 0 16px;
   background: var(--term-bg); color: var(--term-fg); border: 1px solid color-mix(in oklab, var(--term-bg) 60%, var(--ink-3));
   border-radius: 999px; cursor: pointer; font-size: 12px; box-shadow: 0 14px 34px -12px rgba(0,0,0,.6);
   transition: border-color .2s, transform .2s, opacity .25s, gap .25s;
 }
-.term-fab:hover { border-color: var(--accent); transform: translateY(-2px); gap: 10px; }
+.term-fab:hover { border-color: var(--accent); transform: translateY(-2px); }
 .term-fab-ico { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; color: var(--term-green); font-size: 14px; }
 .term-fab-ico i { width: 8px; height: 14px; background: var(--term-fg); animation: blink 1.06s steps(1) infinite; }
-.term-fab-label { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width .25s; }
-.term-fab:hover .term-fab-label, .term-fab:focus-visible .term-fab-label { max-width: 90px; }
+.term-fab-label { white-space: nowrap; letter-spacing: .02em; }
 body.console-open .term-fab { opacity: 0; pointer-events: none; transform: translateY(8px); }
 @media (prefers-reduced-motion: reduce) { .term-fab-ico i { animation: none; } }
 
