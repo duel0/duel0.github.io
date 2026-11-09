@@ -190,6 +190,8 @@
      5. CTF — the flag check lives here (hash only).
      ══════════════════════════════════════════════════════════ */
   const FLAG_SHA256 = '7f282c73354da5b9b278064fd03c1767d2a6798e12a42123d4745b5ef7754ba3';
+  // Root state is bound to the current flag, so changing the flag resets everyone.
+  const PWN_TOKEN = FLAG_SHA256.slice(0, 16);
   const ROOT = document.querySelector('link[rel="icon"]')?.getAttribute('href')?.replace('favicon.svg', '') ?? '';
 
   const LINKS = {
@@ -256,7 +258,7 @@
       <label class="console-in mono"><span class="console-ps"></span><input type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Command"></label>`;
     document.body.append(box);
     const out = box.querySelector('.console-out'), input = box.querySelector('input'), ps = box.querySelector('.console-ps');
-    const isRoot = () => store.get('pwned') === '1';
+    const isRoot = () => store.get('pwned') === PWN_TOKEN;
     // Tiny filesystem: /, /home, /home/visitor, /root.
     const HOME = () => (isRoot() ? '/root' : '/home/visitor');
     let cwd = '/home/visitor';
@@ -493,7 +495,7 @@
         if (!flag) return print('usage: submit flag{...}', 'dim');
         if (!crypto?.subtle) return print('submit needs a secure context (https).', 'red');
         if ((await sha256(flag.trim())) === FLAG_SHA256) {
-          store.set('pwned', '1'); prompt(); markPwned();
+          store.set('pwned', PWN_TOKEN); prompt(); markPwned();
           print([
             '   __    _              _',
             '  / _|  | |  __ _   __ _| |  ✓ correct',
@@ -683,7 +685,7 @@
   };
 
   const markPwned = () => {
-    if (store.get('pwned') !== '1' || document.querySelector('.pwned')) return;
+    if (store.get('pwned') !== PWN_TOKEN || document.querySelector('.pwned')) return;
     const f = document.querySelector('.site-footer');
     if (!f) return;
     const s = el('span', { class: 'pwned mono', title: 'Flag captured' });
