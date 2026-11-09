@@ -217,13 +217,13 @@
   const initConsole = () => {
     const box = el('div', { class: 'console', role: 'dialog', 'aria-label': 'Console', 'aria-hidden': 'true' });
     box.innerHTML = `
-      <div class="console-bar mono"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span>visitor@balassone: ~</span><button type="button" class="console-x" aria-label="Close console">esc</button></div>
+      <div class="console-bar mono"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span>visitor@duel0: ~</span><button type="button" class="console-x" aria-label="Close console">esc</button></div>
       <div class="console-out mono" aria-live="polite"></div>
       <label class="console-in mono"><span class="console-ps"></span><input type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Command"></label>`;
     document.body.append(box);
     const out = box.querySelector('.console-out'), input = box.querySelector('input'), ps = box.querySelector('.console-ps');
     const isRoot = () => store.get('pwned') === '1';
-    const prompt = () => { ps.textContent = isRoot() ? 'root@balassone:~#' : 'visitor@balassone:~$'; };
+    const prompt = () => { ps.textContent = isRoot() ? 'root@duel0:~#' : 'visitor@duel0:~$'; };
     const history = []; let hi = 0, opened = false;
 
     const print = (lines, cls = '') => {
