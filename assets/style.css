@@ -1253,10 +1253,6 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
   .calc canvas { aspect-ratio: 4 / 3; }
 }
 
-/* Hacker handle next to the name */
-.hero-handle {
-  align-self: center; margin-left: .35em; padding: 4px 9px 3px; border: 1px solid var(--line); border-radius: 999px;
-  font: 400 12px/1 var(--mono); letter-spacing: .02em; color: var(--ink-3); white-space: nowrap;
-}
-.hero-handle b { font-weight: 500; color: var(--term-green); }
-@media (max-width: 600px) { .hero-id { flex-wrap: wrap; row-gap: 10px; } .hero-handle { margin-left: 0; } }
+/* @duel0 signature in the footer */
+.site-footer .handle { margin-left: 6px; color: var(--term-green); }
+.site-footer .handle:hover { color: var(--accent); }
