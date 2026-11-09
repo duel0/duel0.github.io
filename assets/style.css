@@ -1055,9 +1055,9 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .timeline .tl-award { margin-top: 4px; color: var(--accent) !important; font-size: 13.5px !important; }
 
 /* Timeline logos */
-.timeline li { grid-template-columns: 72px 30px minmax(0, 1fr); gap: 12px; align-items: start; }
-.tl-logo { display: grid; place-items: center; width: 28px; height: 28px; align-self: center; }
-.tl-logo img { display: block; width: 28px; height: 28px; object-fit: contain; opacity: .85; }
+.timeline li { grid-template-columns: 72px 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.tl-logo { display: grid; place-items: center; width: 40px; height: 40px; align-self: center; }
+.tl-logo img { display: block; width: 40px; height: 40px; object-fit: contain; opacity: .85; }
 .timeline li:hover .tl-logo img { opacity: 1; }
 .tl-badge { border: 1px solid var(--line); border-radius: 50%; font-size: 9.5px; letter-spacing: .04em; color: var(--ink-2); }
 .pub-venue a { color: var(--ink-2); }
