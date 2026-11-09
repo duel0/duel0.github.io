@@ -1039,20 +1039,20 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 /* Publications: talks sub-list · About: award line */
 .sub-head { margin: clamp(40px, 5vw, 56px) 0 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
 .talks { border-top: 0; }
-.talks li { grid-template-columns: 72px minmax(0, 1fr) 200px; }
-.talk-thumb { position: relative; display: block; border: 1px solid var(--line); line-height: 0; overflow: hidden; transition: border-color .2s; }
-.talk-thumb img { width: 100%; height: auto; filter: saturate(.85) brightness(.9); transition: filter .25s, transform .4s cubic-bezier(.2,.7,.2,1); }
+.talks li { grid-template-columns: 72px minmax(0, 1fr) 112px; }   /* same column as the paper glyphs */
+.talk-thumb { position: relative; display: block; border: 1px solid var(--line); background: var(--paper); line-height: 0; overflow: hidden; transition: border-color .2s; }
+.talk-thumb img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 30% 50%; filter: saturate(.85) brightness(.9); transition: filter .25s, transform .4s cubic-bezier(.2,.7,.2,1); }
 .talk-thumb:hover { border-color: var(--accent); }
 .talk-thumb:hover img { filter: none; transform: scale(1.03); }
 .talk-play {
-  position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px 0 0 -21px; border-radius: 50%;
+  position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
   background: color-mix(in oklab, var(--paper) 70%, transparent); border: 1px solid var(--accent);
   backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transition: background-color .2s;
 }
-.talk-play::after { content: ""; position: absolute; left: 16px; top: 13px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent var(--accent); }
+.talk-play::after { content: ""; position: absolute; left: 11px; top: 8.5px; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent var(--accent); }
 .talk-thumb:hover .talk-play { background: var(--accent); }
 .talk-thumb:hover .talk-play::after { border-left-color: #fff; }
-@media (max-width: 600px) { .talks li { grid-template-columns: minmax(0, 1fr); } .talk-thumb { max-width: 320px; margin-top: 8px; } }
+@media (max-width: 600px) { .talks li { grid-template-columns: minmax(0, 1fr); } .talk-thumb { display: none; } }
 .timeline .tl-award { margin-top: 4px; color: var(--accent) !important; font-size: 13.5px !important; }
 
 /* Timeline logos */
