@@ -1310,3 +1310,12 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .armband img[src*="napwnli"] { height: 34px; width: auto; transform: translateY(-2px); filter: drop-shadow(0 0 0.6px rgba(19,41,75,.6)); }   /* optical centre: the head sits low in the image */
 .armband img[src*="cyberchallenge"] { filter: brightness(0) saturate(100%) invert(13%) sepia(36%) saturate(2400%) hue-rotate(196deg); }   /* navy emblem */
 @media (max-width: 900px) { .team-honours { flex-direction: column-reverse; align-items: flex-start; } }
+
+/* napwnli heading: | UniNA seal */
+.team-head { display: flex; align-items: center; gap: 22px; margin-bottom: 14px; }
+.team-head .team-brand { margin-bottom: 0; }
+.team-uni { display: flex; align-items: center; gap: 22px; margin-top: 10px; text-decoration: none; opacity: .9; transition: opacity .2s; }   /* same optical offset as .team-name */
+.team-uni:hover { opacity: 1; }
+.team-uni i { width: 2px; height: clamp(48px, 5.6vw, 72px); background: color-mix(in oklab, var(--accent) 60%, transparent); }
+.team-uni img { display: block; height: clamp(46px, 5.4vw, 68px); width: auto; }
+@media (max-width: 600px) { .team-head { gap: 14px; } .team-uni { gap: 14px; } }
