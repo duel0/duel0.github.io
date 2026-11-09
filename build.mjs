@@ -593,15 +593,14 @@ function build() {
   // Blog index.
   write(path.join(OUT, 'blog', 'index.html'), page({
     root: '../',
-    title: `Writing — ${SITE.title}`,
+    title: `Blog — ${SITE.title}`,
     description: SITE.description,
     canonical: `${SITE.url}/blog/`,
     ogType: 'website',
     ogImage: ogUrl('site'),
     content: `
     <section class="wrap blog-hero">
-      <p class="kicker mono">Blog</p>
-      <h1 class="blog-h1">Writing</h1>
+      <h1 class="blog-h1">Blog</h1>
       <p class="blog-sub">${esc(SITE.description)}</p>
       <a class="btn" href="../feed.xml">Subscribe via RSS <span aria-hidden="true">↗</span></a>
     </section>
@@ -633,7 +632,7 @@ function build() {
       content: `
     <article class="post">
       <header class="post-head narrow">
-        <a class="back mono" href="../">← Writing</a>
+        <a class="back mono" href="../">← Blog</a>
         ${kicker(p)}
         <h1 class="post-h1"${vt('t', p)}>${esc(p.title)}</h1>
         ${p.description ? `<p class="post-lede">${esc(p.description)}</p>` : ''}
@@ -675,7 +674,7 @@ ${p.html}
   write(path.join(OUT, 'feed.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${esc(SITE.title)} — Writing</title>
+    <title>${esc(SITE.title)} — Blog</title>
     <link>${SITE.url}/blog/</link>
     <description>${esc(SITE.description)}</description>${items}
   </channel>
