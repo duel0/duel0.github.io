@@ -77,7 +77,7 @@ The CI build reuses the committed PNGs, so it doesn't need Chrome.
 
 ## Easter eggs
 
-`T` (or `\`, `~`, Ctrl/⌘+K) opens a console (`help` for commands). The Konami code (or `redteam` in the console) triggers red alert mode.
+The floating terminal button (bottom right) opens a console (`help` for commands). The Konami code (or `redteam` in the console) triggers red alert mode.
 There is a hidden 3-part CTF on the site — the flag is checked by SHA-256 in `assets/fx.js`, so it never
 appears in plain text in the repo. Keep it that way if you change it.
 

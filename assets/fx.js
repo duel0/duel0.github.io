@@ -486,6 +486,7 @@
     const toggle = (force) => {
       const open = force ?? !box.classList.contains('is-open');
       box.classList.toggle('is-open', open);
+      document.body.classList.toggle('console-open', open);
       box.setAttribute('aria-hidden', String(!open));
       if (open) {
         if (!opened) {
@@ -512,12 +513,14 @@
     document.addEventListener('keydown', (e) => {
       const t = e.target;
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-      const palette = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k';
-      const plain = !e.metaKey && !e.ctrlKey && !e.altKey && (e.key === '\\' || e.key === '~' || e.key === '`' || e.code === 'Backquote');
-      if (palette || plain) { e.preventDefault(); toggle(); }
-      else if (e.key === 'Escape' && box.classList.contains('is-open')) toggle(false);
+      if (e.key === 'Escape' && box.classList.contains('is-open')) toggle(false);
     });
     document.querySelectorAll('[data-console]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); toggle(true); }));
+    // Floating terminal button (bottom right).
+    const fab = el('button', { type: 'button', class: 'term-fab mono', 'aria-label': 'Open terminal', title: 'Open terminal' });
+    fab.innerHTML = '<span class="term-fab-ico" aria-hidden="true">&gt;<i></i></span><span class="term-fab-label">terminal</span>';
+    fab.addEventListener('click', () => toggle());
+    document.body.append(fab);
   };
 
 
@@ -575,7 +578,7 @@
   const greet = () => {
     try {
       console.log('%c napwnli says hi ', 'background:#c2352a;color:#fff;font:600 12px monospace;padding:4px 6px');
-      console.log('%cThere is a flag hidden on this site (3 parts). Start with the page source. Press T for a shell.', 'font:12px monospace');
+      console.log('%cThere is a flag hidden on this site (3 parts). Start with the page source. The terminal button (bottom right) opens a shell.', 'font:12px monospace');
     } catch (e) { /* ignore */ }
   };
 

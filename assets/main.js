@@ -35,20 +35,6 @@
     vt.finished.catch(() => {}).finally(() => root.classList.remove('theme-wipe'));
   };
 
-  /* ── Keyboard shortcuts ────────────────────────────────── */
-  const keyTargets = {};
-  document.querySelectorAll('[data-key]').forEach(el => { keyTargets[el.dataset.key] = el; });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-    const t = e.target;
-    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-    const el = keyTargets[e.key.toLowerCase()];
-    if (!el) return;
-    e.preventDefault();
-    el.click();
-  });
-
   /* ── Publication filter ────────────────────────────────── */
   const filterBtns = document.querySelectorAll('.filter button');
   const pubs = document.querySelectorAll('#pubs li');
