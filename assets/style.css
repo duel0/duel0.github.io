@@ -1165,3 +1165,12 @@ em, i, .display em, .section-title em { font-style: normal; }
 .end-title { font: 700 26px/1.15 var(--serif); letter-spacing: -0.04em; }
 .posts-empty { font: 400 16px/1.5 var(--mono); }
 .lab-dark { letter-spacing: 0; }
+
+/* Balance the two-column blocks */
+.hero-fig canvas { aspect-ratio: 2 / 1; }
+.hero-copy .actions { margin-top: 32px; }
+.hero h1 { margin-bottom: 0; }
+.lab { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.lab-fig canvas { aspect-ratio: 16 / 8.6; }
+.about-lead.lab-lead, .lab-lead { font-size: clamp(19px, 2.1vw, 26px) !important; line-height: 1.4 !important; }
+.lab-text > p:not(.lab-lead):not(.lab-kicker) { font-size: 17px; }
