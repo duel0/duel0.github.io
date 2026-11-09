@@ -157,9 +157,9 @@ kbd {
 .hero-grid {
   display: grid; gap: clamp(24px, 5vw, 72px);
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  align-items: end; margin-top: clamp(20px, 3vw, 36px);
+  align-items: center; margin-top: clamp(20px, 3vw, 36px);
 }
-.hero-side { padding-bottom: 8px; }
+.hero-side { padding-bottom: 0; }
 @media (max-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
 
 .eyebrow { font-size: 12.5px; color: var(--ink-2); margin-bottom: 20px; letter-spacing: .01em; }
