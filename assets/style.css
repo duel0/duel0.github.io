@@ -1232,7 +1232,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 }
 
 /* Blog: interactive compound-growth calculator */
-.calc { margin-inline: 0; border: 1px solid var(--line); background: color-mix(in oklab, var(--paper-2) 50%, var(--paper)); padding: 18px 18px 14px; }
+.calc { margin-inline: 0; border: 1px solid var(--line); background: transparent; padding: 18px 18px 14px; }
 @media (min-width: 900px) { .calc { margin-inline: -60px; } }
 .calc-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 20px; font-size: 11px; color: var(--ink-3); }
 .calc-controls label { display: flex; flex-direction: column; gap: 8px; }
@@ -1241,7 +1241,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .calc input[type=range] { width: 100%; accent-color: var(--accent); }
 .calc-check { grid-column: 1 / -1; flex-direction: row !important; align-items: center; gap: 8px !important; text-transform: none; color: var(--ink-2); font-size: 12px; }
 .calc-check input { accent-color: var(--accent); }
-.calc canvas { display: block; width: 100%; aspect-ratio: 16 / 7.5; margin-top: 16px; cursor: crosshair; }
+.calc canvas { display: block; width: 100%; aspect-ratio: 16 / 8.5; margin-top: 16px; cursor: pointer; }
 .calc-out { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 10px 0 0; border-top: 1px solid var(--line); }
 .calc-out > div { padding: 12px 10px 0 0; }
 .calc-out dt { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }

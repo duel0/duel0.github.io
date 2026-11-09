@@ -916,6 +916,78 @@
   /* ══════════════════════════════════════════════════════════
      2. RESEARCH FIGURES
      ══════════════════════════════════════════════════════════ */
+  /* ── Coin-stack charts (calculator + compound cover) ──────────
+     Blue coins = money paid in, red coins = growth on top,
+     dashed coins = paid in but lost (value below contributions). */
+  const coin = (ctx, cx, y, rx, ry, th, kind, hot, top) => {
+    const col = kind === 'paid' ? C.blue : kind === 'growth' ? C.accent : C.ink3;
+    const tint = kind === 'lost' ? 0 : hot ? 0.3 : 0.16;
+    ctx.lineWidth = hot ? 1.15 : 0.85; ctx.strokeStyle = col;
+    if (kind === 'lost') ctx.setLineDash([2, 2.5]);
+    ctx.beginPath();                                                    // rim
+    ctx.moveTo(cx - rx, y); ctx.lineTo(cx - rx, y + th);
+    ctx.ellipse(cx, y + th, rx, ry, 0, Math.PI, 0, true);
+    ctx.lineTo(cx + rx, y); ctx.closePath();
+    ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fill();
+    ctx.globalAlpha = tint * 1.4; ctx.fillStyle = col; ctx.fill();
+    ctx.globalAlpha = kind === 'lost' ? 0.6 : 1; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, y, rx, ry, 0, 0, Math.PI * 2);    // face
+    ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fill();
+    ctx.globalAlpha = tint; ctx.fillStyle = col; ctx.fill();
+    ctx.globalAlpha = kind === 'lost' ? 0.6 : 1; ctx.stroke();
+    if (top && rx > 9 && kind !== 'lost') {                             // milled ring + € on the top coin
+      ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.ellipse(cx, y, rx * 0.66, ry * 0.66, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 0.9; ctx.fillStyle = col; ctx.font = `600 ${Math.round(ry * 1.15)}px ${MONO}`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.save(); ctx.translate(cx, y); ctx.scale(1, ry / rx * 2.2); ctx.fillText('€', 0, 0.5); ctx.restore();
+    }
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  };
+
+  // stacks: [{ t, paid, value }]. Returns per-stack geometry for labels / hover.
+  const drawCoinChart = (ctx, w, h, stacks, o = {}) => {
+    const mini = !!o.mini;
+    const L = mini ? 12 : o.axis === false ? 24 : 66, R = w - (mini ? 12 : 18), T = mini ? 12 : 30, B = h - (mini ? 12 : 30);
+    const n = stacks.length, colW = (R - L) / n;
+    const rx = Math.max(4, Math.min(26, colW * 0.36)), ry = rx * 0.34, th = Math.max(2.2, Math.min(5.2, rx * 0.24));
+    const maxV = Math.max(1, ...stacks.map((s) => Math.max(s.value, s.paid)));
+    const capacity = Math.max(4, Math.floor((B - T - ry * 2 - 6) / th));
+    const unit = maxV / capacity;
+    const yOf = (v) => B - ry - (v / unit) * th;
+    if (!mini && o.axis !== false) {
+      const short = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.1; ctx.beginPath();
+      for (let k = 1; k <= 4; k++) { const y = yOf(maxV * k / 4); ctx.moveTo(L, y); ctx.lineTo(R, y); }
+      ctx.stroke();
+      ctx.globalAlpha = 1; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (let k = 0; k <= 4; k++) ctx.fillText(`€${short.format(maxV * k / 4)}`, L - 10, yOf(maxV * k / 4));
+    }
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = C.ink; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(L, B + 1); ctx.lineTo(R, B + 1); ctx.stroke();
+    const geo = [];
+    stacks.forEach((s, i) => {
+      const cx = L + colW * (i + 0.5);
+      const paidC = Math.max(1, Math.round(s.paid / unit)), valC = Math.max(0, Math.round(s.value / unit));
+      const total = Math.max(paidC, valC);
+      const prog = o.progress == null ? 1 : clamp(o.progress * 1.7 - (i / n) * 0.7, 0, 1);
+      const shown = Math.ceil(total * prog);
+      const hot = o.hover === i;
+      // shadow ellipse on the floor
+      ctx.globalAlpha = hot ? 0.5 : 0.25; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.7;
+      ctx.beginPath(); ctx.ellipse(cx, B - ry + th + ry * 0.2, rx * 1.25, ry * 1.25, 0, 0, Math.PI * 2); ctx.stroke();
+      for (let k = 0; k < shown; k++) {
+        const kind = k < Math.min(paidC, valC) ? 'paid' : valC > paidC ? 'growth' : 'lost';
+        coin(ctx, cx, B - ry - k * th, rx, ry, th, kind, hot, k === shown - 1);
+      }
+      if (!mini && o.age != null) {
+        ctx.globalAlpha = hot ? 1 : 0.85; ctx.fillStyle = hot ? C.ink : C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText(`${o.age + s.t}`, cx, B + 9);
+      }
+      geo.push({ cx, rx, top: B - ry - Math.max(0, shown - 1) * th - ry, paidTop: B - ry - (paidC - 1) * th - ry, x0: L + colW * i, x1: L + colW * (i + 1) });
+    });
+    ctx.globalAlpha = 1;
+    return { geo, T, B, L, R };
+  };
+
   const FIGS = {
     // A — attack vectors converging on a target.
     offense(ctx, w, h, p, rnd) {
@@ -1397,56 +1469,22 @@
         }
       }
     },
-    // O — compound growth: contributions staircase vs portfolio curve, with a drawdown.
+    // O — compound growth as coin stacks: paid-in (blue) vs growth (red), one drawdown.
     compound(ctx, w, h, p, rnd) {
-      const L = 46, R = w - 18, T = 26, B = h - 34, Y = 40;
-      const X = (t) => L + (R - L) * (t / Y);
-      // simulate: monthly contributions, ~6%/yr with noise and one crash
-      const crashAt = 12 + Math.floor(rnd() * 8), pts = [], paid = [];
+      const Y = 40, step = 4, crashAt = 12 + 4 * Math.floor(rnd() * 3), stacks = [];
       let v = 0, c = 0;
-      for (let m = 0; m <= Y * 12; m++) {
-        const yr = m / 12;
-        let r = 0.06 / 12 + (rnd() - 0.5) * 0.03;
-        if (Math.abs(yr - crashAt) < 0.5) r -= 0.055;
+      for (let m = 1; m <= Y * 12; m++) {
+        let r = 0.065 / 12 + (rnd() - 0.5) * 0.02;
         v = v * (1 + r) + 1; c += 1;
-        if (m % 3 === 0) { pts.push([yr, v]); paid.push([yr, c]); }
+        if (m === crashAt * 12) v *= 0.62;
+        if (m % (step * 12) === 0) stacks.push({ t: m / 12, paid: c, value: v });
       }
-      const max = Math.max(...pts.map((q) => q[1])) * 1.08;
-      const Yp = (val) => B - (B - T) * (val / max);
-      // axes + grid
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.12; ctx.beginPath();
-      for (let t = 0; t <= Y; t += 10) { ctx.moveTo(X(t), T); ctx.lineTo(X(t), B); }
-      for (let k = 1; k <= 4; k++) { const y = B - (B - T) * k / 4; ctx.moveTo(L, y); ctx.lineTo(R, y); }
-      ctx.stroke();
-      ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, B); ctx.lineTo(R, B); ctx.stroke();
-      if (!MINI) {
-        ctx.fillStyle = C.ink3; ctx.globalAlpha = 0.9; ctx.font = `9.5px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        for (let t = 0; t <= Y; t += 10) ctx.fillText(`${25 + t}`, X(t), B + 6);
-      }
-      const n = Math.max(2, Math.floor(pts.length * p));
-      // contributions: hatched area + stair line
-      ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), B);
-      paid.slice(0, n).forEach(([t, val]) => ctx.lineTo(X(t), Yp(val)));
-      ctx.lineTo(X(paid[n - 1][0]), B); ctx.closePath(); ctx.clip();
-      ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.35; ctx.lineWidth = 0.7; ctx.beginPath();
-      for (let x = L - h; x < R; x += 6) { ctx.moveTo(x, B); ctx.lineTo(x + h, B - h); }
-      ctx.stroke(); ctx.restore();
-      ctx.strokeStyle = C.blue; ctx.globalAlpha = 1; ctx.lineWidth = 1.2; ctx.beginPath();
-      paid.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val)))); ctx.stroke();
-      // portfolio: growth fill + line
-      ctx.fillStyle = C.accent; ctx.globalAlpha = 0.08; ctx.beginPath();
-      pts.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val))));
-      for (let i = n - 1; i >= 0; i--) ctx.lineTo(X(paid[i][0]), Yp(paid[i][1]));
-      ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = C.accent; ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.beginPath();
-      pts.slice(0, n).forEach(([t, val], i) => (i ? ctx.lineTo(X(t), Yp(val)) : ctx.moveTo(X(t), Yp(val)))); ctx.stroke();
-      const head = pts[n - 1]; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(X(head[0]), Yp(head[1]), 3, 0, Math.PI * 2); ctx.fill();
-      if (p > 0.95) {
-        const ci = pts.findIndex((q) => q[0] >= crashAt), cq = pts[Math.min(ci + 2, pts.length - 1)];
-        label(ctx, X(cq[0]), Yp(cq[1]), 'drawdown', 1, C.ink2, true, -22);
-        const e = pts[pts.length - 1], ep = paid[paid.length - 1];
-        label(ctx, X(e[0]) - 4, Yp(e[1]), 'growth', -1, C.accent, true, 14);
-        label(ctx, X(ep[0]) - 4, Yp(ep[1]), 'paid in', -1, C.blue, true, -16);
+      const { geo } = drawCoinChart(ctx, w, h, stacks, { mini: MINI, progress: p, age: 25, axis: false });
+      if (p > 0.95 && !MINI) {
+        const last = geo[geo.length - 1], ci = stacks.findIndex((q) => q.t === crashAt);
+        label(ctx, last.cx, last.top, 'growth', -1, C.accent, true, 14);
+        label(ctx, last.cx - last.rx, last.paidTop + 30, 'paid in', -1, C.blue, false, -14);
+        if (ci >= 0) label(ctx, geo[ci].cx, geo[ci].top, 'drawdown', -1, C.ink2, true, 20);
       }
     },
   };
@@ -1483,7 +1521,7 @@
         const noise = makeNoise(seed);
         const sc = 1 / 95;
         ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7;
-        ctx.globalAlpha = { evaluation: 0.12, signal: 0.07, network: 0.14, ad: 0.12, glyph: 0.05, 'glyph-red': 0.05, map: 0, campus: 0.06, compound: 0.07 }[kind] ?? 0.26;
+        ctx.globalAlpha = { evaluation: 0.12, signal: 0.07, network: 0.14, ad: 0.12, glyph: 0.05, 'glyph-red': 0.05, map: 0, campus: 0.06, compound: 0.16 }[kind] ?? 0.26;
         drawContours(ctx, w, h, (x, y) => noise(x * sc + seed % 97, y * sc), range(0.18, 0.86, mini ? 0.07 : 0.045), mini ? 9 : 7);
         // Frame.
         ctx.globalAlpha = 0.6; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.75;
@@ -1587,11 +1625,10 @@
     document.querySelectorAll('.calc').forEach((fig) => {
       const canvas = fig.querySelector('canvas'), out = fig.querySelector('.calc-out');
       const inputs = Object.fromEntries([...fig.querySelectorAll('input')].map((i) => [i.name, i]));
-      let series = [], hoverX = null;
       const sim = () => {
         const v = (k) => Number(inputs[k].value);
         const monthly = v('monthly'), rate = v('rate') / 100, years = v('years'), start = v('start'), age = v('age');
-        const crash = inputs.crash.checked, crashYear = Math.round(years * 0.4);
+        const crash = inputs.crash.checked, stepY = Math.max(1, Math.ceil(years / 10)), crashYear = Math.max(stepY, Math.round((years * 0.4) / stepY) * stepY);
         const rm = Math.pow(1 + rate, 1 / 12) - 1;
         let value = start, paid = start; const s = [{ t: 0, value, paid }];
         for (let m = 1; m <= years * 12; m++) {
@@ -1609,64 +1646,62 @@
           <div><dt>Multiple</dt><dd>${(last.value / Math.max(1, last.paid)).toFixed(2)}×</dd></div>`;
         return { s, age, years, crash, crashYear };
       };
-      let model = sim();
+      let model = sim(), hoverI = null, progress = reduceMotion ? 1 : 0;
+      const noise = makeNoise(777);
+      const stacksOf = ({ s, years }) => {
+        const step = Math.max(1, Math.ceil(years / 10)), out = [];
+        for (let t = step; t <= years; t += step) out.push(s[t * 12]);
+        if (out[out.length - 1].t !== years) out.push(s[years * 12]);
+        return out;
+      };
       const render = () => {
         const { ctx, w, h } = setupCanvas(canvas);
         ctx.clearRect(0, 0, w, h); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        const { s, age, years, crash, crashYear } = model;
-        const L = 64, R = w - 16, T = 18, B = h - 30;
-        const max = Math.max(...s.map((q) => q.value)) * 1.06 || 1;
-        const X = (t) => L + (R - L) * (t / years), Y = (v) => B - (B - T) * (v / max);
-        // grid
-        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.1; ctx.beginPath();
-        const step = years <= 15 ? 5 : 10;
-        for (let t = 0; t <= years; t += step) { ctx.moveTo(X(t), T); ctx.lineTo(X(t), B); }
-        for (let k = 1; k <= 4; k++) { const y = B - (B - T) * k / 4; ctx.moveTo(L, y); ctx.lineTo(R, y); }
-        ctx.stroke();
-        ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, B); ctx.lineTo(R, B); ctx.stroke();
-        ctx.globalAlpha = 1; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        for (let t = 0; t <= years; t += step) ctx.fillText(`${age + t}`, X(t), B + 7);
-        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-        const short = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
-        for (let k = 0; k <= 4; k++) ctx.fillText(`€${short.format(max * k / 4)}`, L - 8, B - (B - T) * k / 4);
-        // paid-in area (blue hatch) + line
-        ctx.save(); ctx.beginPath(); ctx.moveTo(X(0), B); s.forEach((q) => ctx.lineTo(X(q.t), Y(q.paid))); ctx.lineTo(X(years), B); ctx.closePath(); ctx.clip();
-        ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.3; ctx.lineWidth = 0.7; ctx.beginPath();
-        for (let x = L - h; x < R; x += 6) { ctx.moveTo(x, B); ctx.lineTo(x + h, B - h); }
-        ctx.stroke(); ctx.restore();
-        ctx.strokeStyle = C.blue; ctx.lineWidth = 1.3; ctx.globalAlpha = 1; ctx.beginPath();
-        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.paid)) : ctx.moveTo(X(q.t), Y(q.paid)))); ctx.stroke();
-        // growth fill + value line
-        ctx.fillStyle = C.accent; ctx.globalAlpha = 0.09; ctx.beginPath();
-        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.value)) : ctx.moveTo(X(q.t), Y(q.value))));
-        for (let i = s.length - 1; i >= 0; i--) ctx.lineTo(X(s[i].t), Y(s[i].paid));
-        ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = C.accent; ctx.globalAlpha = 1; ctx.lineWidth = 1.8; ctx.beginPath();
-        s.forEach((q, i) => (i ? ctx.lineTo(X(q.t), Y(q.value)) : ctx.moveTo(X(q.t), Y(q.value)))); ctx.stroke();
-        if (crash) { const q = s[crashYear * 12]; if (q) label(ctx, X(q.t), Y(q.value), '−35% crash', 1, C.ink2, true, -24); }
-        // hover readout
-        if (hoverX != null && hoverX >= L && hoverX <= R) {
-          const t = Math.round(((hoverX - L) / (R - L)) * years * 12) / 12, q = s[Math.round(t * 12)];
-          if (q) {
-            ctx.strokeStyle = C.ink3; ctx.globalAlpha = 0.7; ctx.lineWidth = 0.8; ctx.setLineDash([3, 3]);
-            ctx.beginPath(); ctx.moveTo(X(q.t), T); ctx.lineTo(X(q.t), B); ctx.stroke(); ctx.setLineDash([]);
-            for (const [v, col] of [[q.value, C.accent], [q.paid, C.blue]]) { ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = col; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(X(q.t), Y(v), 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
-            const txt = `age ${Math.floor(age + q.t)} · ${eur.format(q.value)} (paid ${eur.format(q.paid)})`;
-            ctx.font = `10.5px ${MONO}`; const tw = ctx.measureText(txt).width;
-            const bx = Math.min(Math.max(X(q.t) - tw / 2 - 6, L), R - tw - 12);
-            ctx.globalAlpha = 0.95; ctx.fillStyle = C.paper; ctx.fillRect(bx, T, tw + 12, 20);
-            ctx.strokeStyle = C.line || C.ink3; ctx.globalAlpha = 0.5; ctx.strokeRect(bx + .5, T + .5, tw + 11, 19);
-            ctx.globalAlpha = 1; ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(txt, bx + 6, T + 10);
-          }
+        // topographic background, like the rest of the site
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.11;
+        drawContours(ctx, w, h, (x, y) => noise(x / 140, y / 140), range(0.2, 0.84, 0.05), 9);
+        ctx.globalAlpha = 1;
+        const stacks = stacksOf(model);
+        const { geo, T } = drawCoinChart(ctx, w, h, stacks, { age: model.age, progress, hover: hoverI });
+        // legend
+        ctx.font = `10px ${MONO}`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        [['paid in', C.blue, false], ['growth', C.accent, false], ['lost in a drawdown', C.ink3, true]].reduce((x, [t, col, dash]) => {
+          ctx.globalAlpha = 1; ctx.strokeStyle = col; ctx.lineWidth = 1; if (dash) ctx.setLineDash([2, 2]);
+          ctx.beginPath(); ctx.ellipse(x + 6, 10, 6, 2.6, 0, 0, Math.PI * 2); ctx.fillStyle = C.paper; ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = C.ink2; ctx.fillText(t, x + 16, 10); return x + 26 + ctx.measureText(t).width + 14;
+        }, w - 360 > 70 ? w - 360 : 70);
+        if (model.crash) {
+          const ci = stacks.findIndex((q) => q.t >= model.crashYear);
+          if (ci >= 0 && progress >= 1) label(ctx, geo[ci].cx, geo[ci].top, '−35% crash', 1, C.ink2, true, 22);
         }
+        if (hoverI != null && geo[hoverI]) {
+          const q = stacks[hoverI], g = geo[hoverI];
+          const txt = `age ${model.age + q.t} · ${eur.format(q.value)} (paid ${eur.format(q.paid)})`;
+          ctx.font = `10.5px ${MONO}`; const tw = ctx.measureText(txt).width;
+          const bx = Math.min(Math.max(g.cx - tw / 2 - 6, 4), w - tw - 16), by = Math.max(T - 4, g.top - 34);
+          ctx.globalAlpha = 0.95; ctx.fillStyle = C.paper; ctx.fillRect(bx, by, tw + 12, 20);
+          ctx.globalAlpha = 0.6; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.strokeRect(bx + .5, by + .5, tw + 11, 19);
+          ctx.globalAlpha = 1; ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(txt, bx + 6, by + 10);
+        }
+        canvas._geo = geo;
+      };
+      const intro = () => {
+        if (reduceMotion) return render();
+        const t0 = performance.now();
+        const step = (now) => { progress = ease((now - t0) / 1300); render(); if (progress < 1) requestAnimationFrame(step); };
+        requestAnimationFrame(step);
       };
       Object.values(inputs).forEach((i) => i.addEventListener('input', () => { model = sim(); render(); }));
-      canvas.addEventListener('pointermove', (e) => { hoverX = e.clientX - canvas.getBoundingClientRect().left; render(); });
-      canvas.addEventListener('pointerleave', () => { hoverX = null; render(); });
+      canvas.addEventListener('pointermove', (e) => {
+        const x = e.clientX - canvas.getBoundingClientRect().left;
+        const i = (canvas._geo || []).findIndex((g) => x >= g.x0 && x < g.x1);
+        if (i !== hoverI) { hoverI = i < 0 ? null : i; render(); }
+      });
+      canvas.addEventListener('pointerleave', () => { hoverI = null; render(); });
       new ResizeObserver(render).observe(canvas);
       onTheme.push(render);
       render();
+      whenVisible(canvas, intro);
     });
   };
 
