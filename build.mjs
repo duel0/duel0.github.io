@@ -795,12 +795,11 @@ if (args.has('--serve')) {
   }).listen(8000, () => console.log('serving _site/ on http://localhost:8000 (watching for changes)'));
 
   let timer;
-  for (const dir of ['index.html', 'assets', 'templates', 'content', 'build.mjs']) {
+  const rebuild = () => { clearTimeout(timer); timer = setTimeout(() => { try { build(); } catch (e) { console.error(e.message); } }, 120); };
+  // Watch directories (not single files): editors and sed replace files, which breaks per-file watchers.
+  for (const dir of ['assets', 'templates', 'content']) {
     const target = path.join(ROOT, dir);
-    if (!fs.existsSync(target)) continue;
-    fs.watch(target, { recursive: true }, () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => { try { build(); } catch (e) { console.error(e.message); } }, 120);
-    });
+    if (fs.existsSync(target)) fs.watch(target, { recursive: true }, rebuild);
   }
+  fs.watch(ROOT, (ev, name) => { if (['index.html', 'robots.txt', 'favicon.svg'].includes(name)) rebuild(); });
 }
