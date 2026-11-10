@@ -1379,8 +1379,9 @@
     // P — paper ∩ product: two circles, and the lens where they overlap.
     'paper-product'(ctx, w, h, p, rnd) {
       const narrow = w / h < 1.5;                                           // social card: shift right, clear of the text fade
-      const r = Math.min(h * 0.34, w * (narrow ? 0.22 : 0.2)), d = r * 1.18;
-      const cx = narrow ? w * 0.6 : w * 0.5, cy = h * 0.5;
+      // the whole group (paper + circles + product) spans about 4.6r: fit it to the width
+      const r = Math.min(h * 0.34, w * (narrow ? 0.14 : 0.2)), d = r * 1.18;
+      const cx = narrow ? w - 24 - 2.36 * r : w * 0.5 - 0.1 * r, cy = h * 0.5;
       const P1 = [cx - d / 2, cy], P2 = [cx + d / 2, cy];
       const k = (a, b2) => clamp((p - a) / (b2 - a), 0, 1);
       const circlePath = (c) => { ctx.beginPath(); ctx.arc(c[0], c[1], r, 0, Math.PI * 2); };
@@ -1426,35 +1427,60 @@
         ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
         ctx.lineWidth = 1; ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(cx, cy, 11, 0, Math.PI * 2); ctx.stroke();
       }
-      // icons in the outer crescents: a paper page (blue) and a terminal over a rack (red)
-      const ip = k(0.25, 0.6), s2 = r * 0.42;
-      if (ip > 0) {
-        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        {                                                                     // paper
-          const x = P1[0] - r * 0.42 - s2 * 0.38, y = cy - s2 * 0.62, pw = s2 * 0.76, ph = s2 * 1.24, f = pw * 0.24;
-          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6;
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + pw - f, y); ctx.lineTo(x + pw, y + f); ctx.lineTo(x + pw, y + ph); ctx.lineTo(x, y + ph); ctx.closePath(); ctx.fill();
-          ctx.globalAlpha = ip; ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(x + pw - f, y); ctx.lineTo(x + pw - f, y + f); ctx.lineTo(x + pw, y + f); ctx.stroke();
-          ctx.lineWidth = 1.2;
-          const rows = [0.62, 0.45, 0.7, 0.7, 0.55, 0.7, 0.4];
-          rows.forEach((l, i) => { const yy = y + ph * (0.2 + i * 0.1); ctx.globalAlpha = (i < 2 ? 0.95 : 0.6) * ip; ctx.lineWidth = i < 2 ? 1.8 : 1.1; ctx.beginPath(); ctx.moveTo(x + pw * 0.16, yy); ctx.lineTo(x + pw * (0.16 + l * 0.7 * ip), yy); ctx.stroke(); });
+      // the paper and the product themselves, sitting on the outer edges of the two circles
+      const u = r / 132, ph = 190 * u, pw = 140 * u;
+      const L = [P1[0] - r - pw * 0.55, cy - ph / 2], R = [P2[0] + r - pw * 1.25 * 0.42, cy - ph / 2];
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      {
+        const [x, y] = L, f = 18 * u, a = k(0, 0.35);
+        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.1;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + pw - f, y); ctx.lineTo(x + pw, y + f); ctx.lineTo(x + pw, y + ph); ctx.lineTo(x, y + ph); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 0.9; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + pw - f, y); ctx.lineTo(x + pw - f, y + f); ctx.lineTo(x + pw, y + f); ctx.stroke();
+        ctx.lineWidth = 2.2 * u; ctx.globalAlpha = 0.85;
+        const line = (x0, y0, len) => { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + len * a, y0); ctx.stroke(); };
+        line(x + 14 * u, y + 22 * u, pw * 0.62); line(x + 14 * u, y + 32 * u, pw * 0.42);
+        ctx.lineWidth = 1.2 * u; ctx.globalAlpha = 0.45;
+        const colW = (pw - 36 * u) / 2;
+        for (let c = 0; c < 2; c++) for (let i = 0; i < 9; i++) {
+          if (c === 1 && i > 2 && i < 8) continue;
+          line(x + 14 * u + c * (colW + 8 * u), y + (50 + i * 8) * u, colW * (0.7 + rnd() * 0.3));
         }
-        {                                                                     // product
-          const x = P2[0] + r * 0.42 - s2 * 0.62, y = cy - s2 * 0.62, tw = s2 * 1.24, th = s2 * 0.7;
-          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.accent; ctx.lineWidth = 1.6;
-          ctx.fillRect(x, y, tw, th); ctx.globalAlpha = ip; ctx.strokeRect(x, y, tw, th);
-          ctx.beginPath(); ctx.moveTo(x, y + th * 0.22); ctx.lineTo(x + tw, y + th * 0.22); ctx.stroke();
-          ctx.fillStyle = C.accent; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(x + tw * (0.08 + i * 0.07), y + th * 0.11, 1.6, 0, Math.PI * 2); ctx.fill(); }
-          ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x + tw * 0.1, y + th * 0.42); ctx.lineTo(x + tw * 0.18, y + th * 0.52); ctx.lineTo(x + tw * 0.1, y + th * 0.62); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(x + tw * 0.24, y + th * 0.66); ctx.lineTo(x + tw * (0.24 + 0.2 * ip), y + th * 0.66); ctx.stroke();
-          for (let i = 0; i < 2; i++) {                                       // rack units below
-            const ry = y + th + s2 * 0.1 + i * s2 * 0.26;
-            ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(x + tw * 0.08, ry, tw * 0.84, s2 * 0.2);
-            ctx.globalAlpha = ip * 0.8; ctx.lineWidth = 1.2; ctx.strokeRect(x + tw * 0.08, ry, tw * 0.84, s2 * 0.2);
-            ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + tw * 0.84, ry + s2 * 0.1, 1.5, 0, Math.PI * 2); ctx.fill();
-          }
+        const bx = x + 22 * u + colW, by = y + 106 * u, vals = [0.543, 0.283, 0.239, 0.152];
+        ctx.lineWidth = 0.8;
+        vals.forEach((v, i) => {
+          const bh = v * 70 * u * k(0.15, 0.5), bw = colW / 5.5;
+          ctx.strokeStyle = i === 0 ? C.blue : C.ink2; ctx.fillStyle = i === 0 ? C.blue : C.ink2;
+          ctx.globalAlpha = 0.25; ctx.fillRect(bx + i * bw * 1.35, by - bh, bw, bh); ctx.globalAlpha = 0.9; ctx.strokeRect(bx + i * bw * 1.35, by - bh, bw, bh);
+        });
+        ctx.strokeStyle = C.ink3; ctx.beginPath(); ctx.moveTo(bx - 3 * u, by + 0.5); ctx.lineTo(bx + colW, by + 0.5); ctx.stroke();
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2 * u; ctx.globalAlpha = 0.45;
+        for (let i = 0; i < 6; i++) line(x + 14 * u, y + (134 + i * 8) * u, (pw - 28 * u) * (0.6 + rnd() * 0.4));
+      }
+      {
+        const [x, y] = R, W2 = pw * 1.25, a = k(0.1, 0.45);
+        ctx.strokeStyle = C.ink; ctx.fillStyle = C.paper; ctx.lineWidth = 1;
+        for (let i = 0; i < 4; i++) {
+          const ry = y + ph - (i + 1) * 22 * u, rx = x + 26 * u;
+          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(rx, ry, W2 - 26 * u, 20 * u); ctx.globalAlpha = 0.55; ctx.strokeRect(rx, ry, W2 - 26 * u, 20 * u);
+          ctx.globalAlpha = 0.7; ctx.fillStyle = i === 1 ? C.accent : C.ink3; ctx.beginPath(); ctx.arc(rx + W2 - 40 * u, ry + 10 * u, 2 * u, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 0.35; ctx.beginPath(); for (let j = 0; j < 6; j++) { ctx.moveTo(rx + (10 + j * 7) * u, ry + 6 * u); ctx.lineTo(rx + (10 + j * 7) * u, ry + 14 * u); } ctx.stroke();
         }
+        const tw = W2 * 0.86, th = ph * 0.55;
+        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(x, y, tw, th); ctx.globalAlpha = 0.9; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.1; ctx.strokeRect(x, y, tw, th);
+        ctx.beginPath(); ctx.moveTo(x, y + 14 * u); ctx.lineTo(x + tw, y + 14 * u); ctx.stroke();
+        [C.accent, C.ink3, C.ink3].forEach((c, i) => { ctx.fillStyle = c; ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.arc(x + (9 + i * 8) * u, y + 7 * u, 2.2 * u, 0, Math.PI * 2); ctx.fill(); });
+        ctx.lineWidth = 1.2 * u;
+        for (let i = 0; i < 4; i++) {
+          ctx.globalAlpha = 0.85; ctx.strokeStyle = i === 3 ? C.accent : C.ink2;
+          ctx.beginPath(); ctx.moveTo(x + 10 * u, y + (26 + i * 10) * u); ctx.lineTo(x + 14 * u, y + (26 + i * 10) * u); ctx.stroke();
+          ctx.globalAlpha = 0.45; ctx.strokeStyle = C.ink; const len = (tw - 34 * u) * (0.4 + rnd() * 0.6) * a;
+          ctx.beginPath(); ctx.moveTo(x + 20 * u, y + (26 + i * 10) * u); ctx.lineTo(x + 20 * u + len, y + (26 + i * 10) * u); ctx.stroke();
+        }
+        ctx.strokeStyle = C.accent; ctx.lineWidth = 1.1; ctx.globalAlpha = 0.9;
+        const sx = x + 10 * u, sw = tw - 20 * u, sy = y + th - 8 * u, n = 40, pts = [];
+        let v = 0.5; for (let i = 0; i <= n; i++) { v = clamp(v + (rnd() - 0.5) * 0.5, 0.05, 1); pts.push([sx + sw * i / n, sy - v * 22 * u]); }
+        ctx.beginPath(); polyPart(ctx, pts, k(0.2, 0.6)); ctx.stroke();
       }
       ctx.globalAlpha = 1;
     },
