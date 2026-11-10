@@ -1426,8 +1426,36 @@
         ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
         ctx.lineWidth = 1; ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(cx, cy, 11, 0, Math.PI * 2); ctx.stroke();
       }
-      // centre marks of the two circles
-      [[P1, C.blue], [P2, C.accent]].forEach(([c, col]) => { ctx.globalAlpha = 0.8 * k(0.3, 0.6); ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(c[0] - 5, c[1]); ctx.lineTo(c[0] + 5, c[1]); ctx.moveTo(c[0], c[1] - 5); ctx.lineTo(c[0], c[1] + 5); ctx.stroke(); });
+      // icons in the outer crescents: a paper page (blue) and a terminal over a rack (red)
+      const ip = k(0.25, 0.6), s2 = r * 0.42;
+      if (ip > 0) {
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        {                                                                     // paper
+          const x = P1[0] - r * 0.42 - s2 * 0.38, y = cy - s2 * 0.62, pw = s2 * 0.76, ph = s2 * 1.24, f = pw * 0.24;
+          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + pw - f, y); ctx.lineTo(x + pw, y + f); ctx.lineTo(x + pw, y + ph); ctx.lineTo(x, y + ph); ctx.closePath(); ctx.fill();
+          ctx.globalAlpha = ip; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x + pw - f, y); ctx.lineTo(x + pw - f, y + f); ctx.lineTo(x + pw, y + f); ctx.stroke();
+          ctx.lineWidth = 1.2;
+          const rows = [0.62, 0.45, 0.7, 0.7, 0.55, 0.7, 0.4];
+          rows.forEach((l, i) => { const yy = y + ph * (0.2 + i * 0.1); ctx.globalAlpha = (i < 2 ? 0.95 : 0.6) * ip; ctx.lineWidth = i < 2 ? 1.8 : 1.1; ctx.beginPath(); ctx.moveTo(x + pw * 0.16, yy); ctx.lineTo(x + pw * (0.16 + l * 0.7 * ip), yy); ctx.stroke(); });
+        }
+        {                                                                     // product
+          const x = P2[0] + r * 0.42 - s2 * 0.62, y = cy - s2 * 0.62, tw = s2 * 1.24, th = s2 * 0.7;
+          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.accent; ctx.lineWidth = 1.6;
+          ctx.fillRect(x, y, tw, th); ctx.globalAlpha = ip; ctx.strokeRect(x, y, tw, th);
+          ctx.beginPath(); ctx.moveTo(x, y + th * 0.22); ctx.lineTo(x + tw, y + th * 0.22); ctx.stroke();
+          ctx.fillStyle = C.accent; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(x + tw * (0.08 + i * 0.07), y + th * 0.11, 1.6, 0, Math.PI * 2); ctx.fill(); }
+          ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x + tw * 0.1, y + th * 0.42); ctx.lineTo(x + tw * 0.18, y + th * 0.52); ctx.lineTo(x + tw * 0.1, y + th * 0.62); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x + tw * 0.24, y + th * 0.66); ctx.lineTo(x + tw * (0.24 + 0.2 * ip), y + th * 0.66); ctx.stroke();
+          for (let i = 0; i < 2; i++) {                                       // rack units below
+            const ry = y + th + s2 * 0.1 + i * s2 * 0.26;
+            ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(x + tw * 0.08, ry, tw * 0.84, s2 * 0.2);
+            ctx.globalAlpha = ip * 0.8; ctx.lineWidth = 1.2; ctx.strokeRect(x + tw * 0.08, ry, tw * 0.84, s2 * 0.2);
+            ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + tw * 0.84, ry + s2 * 0.1, 1.5, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+      }
       ctx.globalAlpha = 1;
     },
 
