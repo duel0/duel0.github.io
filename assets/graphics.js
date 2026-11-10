@@ -1378,10 +1378,10 @@
 
     // P — a paper and a product, and the gap between them (arcs crossing each way).
     'paper-product'(ctx, w, h, p, rnd) {
-      const u = Math.min(w / 640, h / 360);
+      const narrow = w / h < 1.5;                                           // social card: smaller, and clear of the text fade
+      const u = Math.min(w / 640, h / 360) * (narrow ? 0.74 : 1);
       const cy = h * 0.52, ph = 190 * u, pw = 140 * u;
-      const narrow = w / h < 1.5;                                           // social card: keep the paper clear of the text fade
-      const L = [(narrow ? w * 0.4 : w * 0.2) - pw / 2, cy - ph / 2], R = [narrow ? w - 28 * u - pw * 1.25 : w * 0.8 - pw * 0.6, cy - ph / 2];
+      const L = [(narrow ? w * 0.38 : w * 0.2) - pw / 2, cy - ph / 2], R = [narrow ? w - 30 * u - pw * 1.25 : w * 0.8 - pw * 0.6, cy - ph / 2];
       const k = (a, b) => clamp((p - a) / (b - a), 0, 1);
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       {
@@ -1409,7 +1409,6 @@
         ctx.strokeStyle = C.ink3; ctx.beginPath(); ctx.moveTo(bx - 3 * u, by + 0.5); ctx.lineTo(bx + colW, by + 0.5); ctx.stroke();
         ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2 * u; ctx.globalAlpha = 0.45;
         for (let i = 0; i < 6; i++) line(x + 14 * u, y + (134 + i * 8) * u, (pw - 28 * u) * (0.6 + rnd() * 0.4));
-        label(ctx, x + pw * 0.15, y + 4, 'PAPER · arXiv', -1, C.ink2, true, 16);
       }
       {
         const [x, y] = R, W2 = pw * 1.25, a = k(0.1, 0.45);
@@ -1435,37 +1434,66 @@
         const sx = x + 10 * u, sw = tw - 20 * u, sy = y + th - 8 * u, n = 40, pts = [];
         let v = 0.5; for (let i = 0; i <= n; i++) { v = clamp(v + (rnd() - 0.5) * 0.5, 0.05, 1); pts.push([sx + sw * i / n, sy - v * 22 * u]); }
         ctx.beginPath(); polyPart(ctx, pts, k(0.2, 0.6)); ctx.stroke();
-        label(ctx, x + tw * 0.85, y + 4, 'PRODUCT · prod', 1, C.ink2, true, 16);
       }
-      const gx0 = L[0] + pw + 10 * u, gx1 = R[0] - 10 * u, mid = (gx0 + gx1) / 2;
-      const curve = (x0, y0, x1, y1, lift, steps = 48) => Array.from({ length: steps + 1 }, (_, i) => { const t = i / steps; return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * lift]; });
-      const top = curve(gx0, cy - ph * 0.18, gx1, cy - ph * 0.18, 58 * u), bot = curve(gx1, cy + ph * 0.22, gx0, cy + ph * 0.22, -52 * u);
-      const draw = (pts, col, prog, gapAt) => {
+      // ── the gap: two truss bridges reaching for each other, and not meeting ──
+      const gx0 = L[0] + pw, gx1 = R[0] + 26 * u, mid = (L[0] + pw + R[0]) / 2, gap = 24 * u;
+      const deckY = cy + ph * 0.34, dh = 12 * u;
+      const truss = (x0, x1, prog) => {
+        const xe = x0 + (x1 - x0) * prog, dir = Math.sign(x1 - x0), seg = 12 * u;
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.globalAlpha = 0.8;
+        ctx.beginPath(); ctx.moveTo(x0, deckY); ctx.lineTo(xe, deckY); ctx.moveTo(x0, deckY + dh); ctx.lineTo(xe, deckY + dh); ctx.stroke();
+        ctx.globalAlpha = 0.45; ctx.beginPath();
+        for (let x = x0, i = 0; dir * (xe - x) > 0; x += dir * seg, i++) { const xn = x + dir * Math.min(seg, Math.abs(xe - x)); ctx.moveTo(x, i % 2 ? deckY : deckY + dh); ctx.lineTo(xn, i % 2 ? deckY + dh : deckY); ctx.moveTo(xn, deckY); ctx.lineTo(xn, deckY + dh); }
+        ctx.stroke();
+        if (prog >= 1) {                                                      // a jagged broken end
+          ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.moveTo(xe, deckY); ctx.lineTo(xe - dir * 3 * u, deckY + dh * 0.35); ctx.lineTo(xe + dir * 2 * u, deckY + dh * 0.6); ctx.lineTo(xe, deckY + dh); ctx.stroke();
+        }
+      };
+      truss(gx0, mid - gap, k(0.15, 0.55));
+      truss(R[0] + 26 * u, mid + gap, k(0.2, 0.6));
+      // debris falling from the broken ends
+      if (p > 0.6) {
+        ctx.fillStyle = C.ink3;
+        for (let i = 0; i < 14; i++) {
+          const side = i % 2 ? 1 : -1, fx = mid + side * (gap + rnd() * 10 * u), fy = deckY + dh + 6 * u + Math.pow(rnd(), 1.6) * ph * 0.35, s2 = (1 + rnd() * 2.2) * u;
+          ctx.globalAlpha = 0.25 + 0.5 * (1 - (fy - deckY) / (ph * 0.45)); ctx.fillRect(fx - s2 / 2, fy - s2 / 2, s2, s2);
+        }
+      }
+      // ── arcs over the gap, carrying packets; the last stretch fades and some packets drop ──
+      const curve = (x0, y0, x1, y1, lift, steps = 60) => Array.from({ length: steps + 1 }, (_, i) => { const t = i / steps; return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * lift]; });
+      const ax0 = L[0] + pw + 8 * u, ax1 = R[0] - 8 * u;
+      const top = curve(ax0, cy - ph * 0.22, ax1, cy - ph * 0.22, 62 * u), bot = curve(ax1, cy + ph * 0.06, ax0, cy + ph * 0.06, 40 * u);
+      const flow = (pts, col, prog) => {
         if (prog <= 0) return;
-        ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.95; ctx.setLineDash([5, 4]);
-        const cut = Math.max(1, Math.floor((pts.length - 1) * Math.min(prog, gapAt)));
-        ctx.beginPath(); polyPart(ctx, pts.slice(0, cut + 1), 1); ctx.stroke(); ctx.setLineDash([]);
-        if (prog > gapAt) {
-          ctx.globalAlpha = 0.3; ctx.setLineDash([2, 5]); ctx.beginPath(); polyPart(ctx, pts.slice(cut), (prog - gapAt) / (1 - gapAt)); ctx.stroke(); ctx.setLineDash([]);
-          if (prog >= 1) { const e = pts[pts.length - 1]; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc(e[0], e[1], 3, 0, Math.PI * 2); ctx.stroke(); }
+        const n = pts.length - 1, land = 0.74, cut = Math.max(1, Math.floor(n * Math.min(prog, land)));
+        ctx.strokeStyle = col; ctx.lineWidth = 1.3; ctx.globalAlpha = 0.9; ctx.setLineDash([6, 4]);
+        ctx.beginPath(); polyPart(ctx, pts.slice(0, cut + 1), 1); ctx.stroke();
+        if (prog > land) { ctx.globalAlpha = 0.22; ctx.setLineDash([2, 6]); ctx.beginPath(); polyPart(ctx, pts.slice(cut), (prog - land) / (1 - land)); ctx.stroke(); }
+        ctx.setLineDash([]);
+        // packets along the solid part
+        ctx.fillStyle = col;
+        for (let t = 0.06; t < Math.min(prog, land); t += 0.085) {
+          const q = pts[Math.round(t * n)]; ctx.globalAlpha = 0.95; ctx.fillRect(q[0] - 2.2 * u, q[1] - 2.2 * u, 4.4 * u, 4.4 * u);
+        }
+        // packets that don't make it: dropping off where the line fades
+        if (prog > land) {
+          const q = pts[Math.round(land * n)];
+          for (let j = 0; j < 4; j++) {
+            const dy = (12 + j * 14) * u, dx = (j - 1.5) * 3 * u;
+            ctx.globalAlpha = 0.7 - j * 0.15; ctx.strokeStyle = col; ctx.lineWidth = 1;
+            ctx.strokeRect(q[0] + dx - 2 * u, q[1] + dy - 2 * u, 4 * u, 4 * u);
+          }
+          ctx.globalAlpha = 0.35; ctx.setLineDash([1, 3]); ctx.beginPath(); ctx.moveTo(q[0], q[1] + 4 * u); ctx.lineTo(q[0], q[1] + 60 * u); ctx.stroke(); ctx.setLineDash([]);
         }
         const head = pts[cut], prev = pts[cut - 1], ang = Math.atan2(head[1] - prev[1], head[0] - prev[0]);
-        ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(head[0] + Math.cos(ang) * 5, head[1] + Math.sin(ang) * 5);
-        ctx.lineTo(head[0] + Math.cos(ang + 2.5) * 5, head[1] + Math.sin(ang + 2.5) * 5); ctx.lineTo(head[0] + Math.cos(ang - 2.5) * 5, head[1] + Math.sin(ang - 2.5) * 5); ctx.fill();
+        ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(head[0] + Math.cos(ang) * 6, head[1] + Math.sin(ang) * 6);
+        ctx.lineTo(head[0] + Math.cos(ang + 2.5) * 6, head[1] + Math.sin(ang + 2.5) * 6); ctx.lineTo(head[0] + Math.cos(ang - 2.5) * 6, head[1] + Math.sin(ang - 2.5) * 6); ctx.fill();
       };
-      draw(top, C.blue, k(0.3, 0.85), 0.72);
-      draw(bot, C.accent, k(0.4, 0.95), 0.72);
-      ctx.globalAlpha = 0.7; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.setLineDash([2, 3]);
-      ctx.beginPath(); ctx.moveTo(mid, cy - ph * 0.62); ctx.lineTo(mid, cy + ph * 0.62); ctx.stroke(); ctx.setLineDash([]);
-      if (!MINI && p > 0.6) {
-        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.beginPath(); ctx.arc(mid, cy, 11 * u, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = C.ink2; ctx.stroke();
-        ctx.fillStyle = C.ink; ctx.font = `600 ${Math.round(12 * u)}px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', mid, cy + 0.5);
-      }
-      if (p > 0.85) {
-        label(ctx, top[24][0], top[24][1], "can't tell you", narrow ? -1 : 1, C.blue, true, 16);
-        label(ctx, bot[24][0], bot[24][1], "can't prove", -1, C.accent, true, -16);
-      }
+      flow(top, C.blue, k(0.3, 0.88));
+      flow(bot, C.accent, k(0.4, 0.98));
+      // a faint plumb line through the gap
+      ctx.globalAlpha = 0.35; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.setLineDash([2, 4]);
+      ctx.beginPath(); ctx.moveTo(mid, cy - ph * 0.7); ctx.lineTo(mid, cy + ph * 0.7); ctx.stroke(); ctx.setLineDash([]);
       ctx.globalAlpha = 1;
     },
 
