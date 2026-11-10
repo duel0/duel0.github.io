@@ -256,8 +256,8 @@
     const resize = () => {
       ({ ctx, w: W, h: H } = setupCanvas(canvas));
       const narrow = W < 700;
-      baseYaw = narrow ? -0.62 : -0.36;
-      basePitch = narrow ? 0.95 : 0.56;
+      baseYaw = narrow ? -0.62 : 0;
+      basePitch = narrow ? 0.95 : 0.82;
       // Fit the whole topology into the canvas at the base view.
       let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
       const pts = [];
