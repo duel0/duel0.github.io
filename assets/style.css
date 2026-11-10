@@ -545,7 +545,7 @@ kbd {
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px;
   padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
 }
-.byline-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 13px; letter-spacing: -0.04em; }
+.byline-avatar { display: block; flex: none; width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--ink); box-shadow: 0 0 0 1px var(--line); }
 .byline-who { display: flex; flex-direction: column; line-height: 1.35; }
 .byline-who b { font-weight: 500; font-size: 15px; }
 .byline-who span { font-size: 11.5px; color: var(--ink-3); }

@@ -729,7 +729,7 @@ function build() {
         <h1 class="post-h1"${vt('t', p)}>${esc(p.title)}</h1>
         ${p.description ? `<p class="post-lede">${esc(p.description)}</p>` : ''}
         <div class="byline">
-          <span class="byline-avatar mono" aria-hidden="true">fb</span>
+          <img class="byline-avatar" src="../../assets/me/avatar.jpg" alt="" width="36" height="36">
           <div class="byline-who"><b>${esc(SITE.author)}</b><span class="mono"><time datetime="${p.date.toISOString().slice(0, 10)}">${meta(p)}</time></span></div>
           ${share}
         </div>
