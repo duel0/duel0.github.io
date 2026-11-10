@@ -1392,32 +1392,27 @@
         if (m % 12 === 0) { years.push(yr); yr = null; }
         if (m % (step * 12) === 0) stacks.push({ t: m / 12, paid: c, value: v });
       }
-      // Candles behind the towers: yearly OHLC on a log scale, in the upper band.
+      // Grid + candles behind the towers: yearly OHLC on a log scale, in the upper band.
       if (!MINI) {
-        const L = 24, R = w - 18, top = 34, bot = h * 0.62;
+        const L = 24, R = w - 18, top = 30, bot = h * 0.68, B = h - 30, GREEN = '#8ad19b';
         const lo = Math.log(Math.min(...years.map((q) => q.l))), hi = Math.log(Math.max(...years.map((q) => q.h)));
         const yOf = (x) => bot - (Math.log(x) - lo) / (hi - lo) * (bot - top);
         const cw = (R - L) / years.length, shown = Math.ceil(years.length * clamp(p * 1.4, 0, 1));
+        // grid: a line every 5 years, and 6 even rows down to the floor
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.16; ctx.setLineDash([2, 3]); ctx.beginPath();
+        for (let i = 0; i <= years.length; i += 5) { const x = L + cw * i; ctx.moveTo(x, top); ctx.lineTo(x, B); }
+        for (let k = 0; k <= 6; k++) { const y = top + (B - top) * k / 6; ctx.moveTo(L, y); ctx.lineTo(R, y); }
+        ctx.stroke(); ctx.setLineDash([]);
         years.slice(0, shown).forEach((q, i) => {
-          const x = L + cw * (i + 0.5), up = q.c >= q.o, col = up ? C.ink3 : C.accent;
-          ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 0.8; ctx.globalAlpha = up ? 0.55 : 0.6;
-          ctx.beginPath(); ctx.moveTo(x, yOf(q.h)); ctx.lineTo(x, yOf(q.l)); ctx.stroke();
-          const y0 = yOf(Math.max(q.o, q.c)), y1 = yOf(Math.min(q.o, q.c)), bw = Math.max(2, cw * 0.5);
-          if (up) { ctx.fillStyle = C.paper; ctx.globalAlpha = 1; ctx.fillRect(x - bw / 2, y0, bw, Math.max(1, y1 - y0)); ctx.globalAlpha = 0.55; ctx.strokeRect(x - bw / 2, y0, bw, Math.max(1, y1 - y0)); }
-          else ctx.fillRect(x - bw / 2, y0, bw, Math.max(1, y1 - y0));
+          const x = L + cw * (i + 0.5), up = q.c >= q.o, col = up ? GREEN : C.accent;
+          const y0 = yOf(Math.max(q.o, q.c)), y1 = yOf(Math.min(q.o, q.c)), bw = Math.max(3, cw * 0.66), bh = Math.max(1.5, y1 - y0);
+          ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.globalAlpha = 0.7;
+          ctx.beginPath(); ctx.moveTo(x, yOf(q.h)); ctx.lineTo(x, y0); ctx.moveTo(x, y0 + bh); ctx.lineTo(x, yOf(q.l)); ctx.stroke();
+          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(x - bw / 2, y0, bw, bh);
+          ctx.globalAlpha = 0.28; ctx.fillStyle = col; ctx.fillRect(x - bw / 2, y0, bw, bh);
+          ctx.globalAlpha = 0.8; ctx.strokeRect(x - bw / 2, y0, bw, bh);
         });
-        // dashed trend line: least-squares fit of log(close) over the years
-        if (p > 0.6) {
-          const xs = years.map((_, i) => i), ys = years.map((q) => Math.log(q.c)), n = xs.length;
-          const mx = xs.reduce((s2, x) => s2 + x, 0) / n, my = ys.reduce((s2, y) => s2 + y, 0) / n;
-          const k = xs.reduce((s2, x, i) => s2 + (x - mx) * (ys[i] - my), 0) / xs.reduce((s2, x) => s2 + (x - mx) ** 2, 0);
-          const at = (i) => yOf(Math.exp(my + k * (i - mx)));
-          ctx.globalAlpha = 0.7; ctx.strokeStyle = C.ink2; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
-          ctx.beginPath(); ctx.moveTo(L + cw * 0.5, at(0)); ctx.lineTo(L + cw * (n - 0.5), at(n - 1)); ctx.stroke(); ctx.setLineDash([]);
-          ctx.globalAlpha = 0.85; ctx.fillStyle = C.ink3; ctx.font = `10px ${MONO}`; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
-          ctx.fillText('trend', L + cw * (n - 0.5), at(n - 1) - 6);
-          ctx.globalAlpha = 1;
-        }
+        ctx.globalAlpha = 1;
       }
       const { geo } = drawCoinChart(ctx, w, h, stacks, { mini: MINI, progress: p, age: 25, axis: false, big: true, fill: 0.72 });
       if (p > 0.95 && !MINI) {
