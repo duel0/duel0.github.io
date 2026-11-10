@@ -1072,10 +1072,12 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 .timeline li.is-now b { color: var(--ink); }
 .timeline li:not(.is-now) b { color: color-mix(in oklab, var(--ink) 82%, var(--paper)); }
 .tl-now {
-  display: flex; align-items: center; gap: 6px; margin-top: 6px;
-  font-style: normal; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ok);
+  display: flex; width: fit-content; align-items: center; gap: 5px; margin-top: 7px; padding: 2px 8px 2px 6px; border-radius: 999px;
+  font-style: normal; font-size: 10px; line-height: 1.4; letter-spacing: .1em; text-transform: uppercase; color: var(--ok);
+  border: 1px solid color-mix(in oklab, var(--ok) 35%, transparent); background: color-mix(in oklab, var(--ok) 9%, transparent);
 }
-.tl-now i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent); animation: pulse 2.2s infinite; }
+.tl-now i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: pulse 2.2s infinite; }
+.tl-now.has-spin i { width: auto; height: auto; background: none; animation: none; font-style: normal; font-size: 12px; line-height: 1; min-width: 1em; text-align: center; }
 .timeline li.is-now .tl-when { color: var(--ink-2); }
 
 /* About: neofetch card */
@@ -1338,3 +1340,7 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .pubs-toggle { display: inline-flex; align-items: center; gap: 8px; margin: 18px 0 0; padding: 8px 14px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); background: none; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; transition: color .2s, border-color .2s; }
 .pubs-toggle:hover { color: var(--ink); border-color: var(--ink-3); }
 .pubs-toggle[hidden] { display: none; }
+
+/* About: programs group sits under the neofetch card */
+.about-programs { margin-top: 40px; }
+.about-programs .timeline li { grid-template-columns: 72px 44px minmax(0, 1fr); }

@@ -719,11 +719,13 @@
     word.textContent = st.lastChild.textContent.trim(); st.lastChild.remove(); st.append(word);
     // braille spinner instead of the dot; slow "z" frames while sleeping
     const spin = st.querySelector('i'); st.classList.add('has-spin');
+    const nows = [...document.querySelectorAll('.tl-now i')]; nows.forEach((n) => n.closest('.tl-now').classList.add('has-spin'));
     const FR = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏', ZZ = ['z  ', 'zz ', 'zzz', '   '];
     let f = 0;
     const spinStep = () => {
       const night = 'night' in st.dataset;
       spin.textContent = night ? ZZ[f % ZZ.length] : reduceMotion ? '⠿' : FR[f % FR.length];
+      nows.forEach((n) => { n.textContent = reduceMotion ? '⠿' : FR[(f + 3) % FR.length]; });
       f++;
       setTimeout(spinStep, night ? 600 : 80);
     };
