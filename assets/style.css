@@ -1036,7 +1036,7 @@ html[data-alert] .section-title, html[data-alert] .hero h1 { animation: alertSha
 @media (max-width: 700px) { .places-fig canvas { aspect-ratio: 4 / 3; } }
 
 /* Publications: talks sub-list · About: award line */
-.sub-head { margin: clamp(40px, 5vw, 56px) 0 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.sub-head { margin: clamp(48px, 6vw, 72px) 0 0; padding-bottom: 14px; border-bottom: 1px solid var(--line); font: 700 clamp(22px, 2.4vw, 28px)/1.2 var(--serif); letter-spacing: -0.03em; color: var(--ink); }
 .talks { border-top: 0; }
 .talks li { grid-template-columns: 72px minmax(0, 1fr) 112px; }   /* same column as the paper glyphs */
 .talk-thumb { position: relative; display: block; border: 1px solid var(--line); background: var(--paper); line-height: 0; overflow: hidden; transition: border-color .2s; }
