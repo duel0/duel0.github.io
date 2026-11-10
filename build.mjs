@@ -26,7 +26,7 @@ const SITE = {
   description: 'Notes on offensive AI, autonomous agents, cyber ranges and CTFs, and everything that comes to my mind.',
 };
 const COVER_STYLES = ['adversary', 'network', 'signal', 'offense', 'evaluation', 'terrain'];   // auto-picked
-const EXTRA_COVERS = ['compound'];                                                              // opt-in via cover:
+const EXTRA_COVERS = ['compound', 'paper-product'];                                                              // opt-in via cover:
 
 const args = new Set(process.argv.slice(2));
 const INCLUDE_DRAFTS = args.has('--drafts');

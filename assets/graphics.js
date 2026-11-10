@@ -1376,6 +1376,99 @@
       if (ap > 0.98) places.forEach((pl) => { const q = pin(pl.at, pl.color, false); two(q[0], q[1], pl.name, pl.sub, pl.color, pl.at[0] < -40 ? 1 : -1, pl.at[0] < -40 ? 30 : 46); });
     },
 
+    // P — a paper and a product, and the gap between them (arcs crossing each way).
+    'paper-product'(ctx, w, h, p, rnd) {
+      const u = Math.min(w / 640, h / 360);
+      const cy = h * 0.52, ph = 190 * u, pw = 140 * u;
+      const narrow = w / h < 1.5;                                           // social card: keep the paper clear of the text fade
+      const L = [(narrow ? w * 0.4 : w * 0.2) - pw / 2, cy - ph / 2], R = [narrow ? w - 28 * u - pw * 1.25 : w * 0.8 - pw * 0.6, cy - ph / 2];
+      const k = (a, b) => clamp((p - a) / (b - a), 0, 1);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      {
+        const [x, y] = L, f = 18 * u, a = k(0, 0.35);
+        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.1;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + pw - f, y); ctx.lineTo(x + pw, y + f); ctx.lineTo(x + pw, y + ph); ctx.lineTo(x, y + ph); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 0.9; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + pw - f, y); ctx.lineTo(x + pw - f, y + f); ctx.lineTo(x + pw, y + f); ctx.stroke();
+        ctx.lineWidth = 2.2 * u; ctx.globalAlpha = 0.85;
+        const line = (x0, y0, len) => { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + len * a, y0); ctx.stroke(); };
+        line(x + 14 * u, y + 22 * u, pw * 0.62); line(x + 14 * u, y + 32 * u, pw * 0.42);
+        ctx.lineWidth = 1.2 * u; ctx.globalAlpha = 0.45;
+        const colW = (pw - 36 * u) / 2;
+        for (let c = 0; c < 2; c++) for (let i = 0; i < 9; i++) {
+          if (c === 1 && i > 2 && i < 8) continue;
+          line(x + 14 * u + c * (colW + 8 * u), y + (50 + i * 8) * u, colW * (0.7 + rnd() * 0.3));
+        }
+        const bx = x + 22 * u + colW, by = y + 106 * u, vals = [0.543, 0.283, 0.239, 0.152];
+        ctx.lineWidth = 0.8;
+        vals.forEach((v, i) => {
+          const bh = v * 70 * u * k(0.15, 0.5), bw = colW / 5.5;
+          ctx.strokeStyle = i === 0 ? C.blue : C.ink2; ctx.fillStyle = i === 0 ? C.blue : C.ink2;
+          ctx.globalAlpha = 0.25; ctx.fillRect(bx + i * bw * 1.35, by - bh, bw, bh); ctx.globalAlpha = 0.9; ctx.strokeRect(bx + i * bw * 1.35, by - bh, bw, bh);
+        });
+        ctx.strokeStyle = C.ink3; ctx.beginPath(); ctx.moveTo(bx - 3 * u, by + 0.5); ctx.lineTo(bx + colW, by + 0.5); ctx.stroke();
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2 * u; ctx.globalAlpha = 0.45;
+        for (let i = 0; i < 6; i++) line(x + 14 * u, y + (134 + i * 8) * u, (pw - 28 * u) * (0.6 + rnd() * 0.4));
+        label(ctx, x + pw * 0.15, y + 4, 'PAPER · arXiv', -1, C.ink2, true, 16);
+      }
+      {
+        const [x, y] = R, W2 = pw * 1.25, a = k(0.1, 0.45);
+        ctx.strokeStyle = C.ink; ctx.fillStyle = C.paper; ctx.lineWidth = 1;
+        for (let i = 0; i < 4; i++) {
+          const ry = y + ph - (i + 1) * 22 * u, rx = x + 26 * u;
+          ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(rx, ry, W2 - 26 * u, 20 * u); ctx.globalAlpha = 0.55; ctx.strokeRect(rx, ry, W2 - 26 * u, 20 * u);
+          ctx.globalAlpha = 0.7; ctx.fillStyle = i === 1 ? C.accent : C.ink3; ctx.beginPath(); ctx.arc(rx + W2 - 40 * u, ry + 10 * u, 2 * u, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 0.35; ctx.beginPath(); for (let j = 0; j < 6; j++) { ctx.moveTo(rx + (10 + j * 7) * u, ry + 6 * u); ctx.lineTo(rx + (10 + j * 7) * u, ry + 14 * u); } ctx.stroke();
+        }
+        const tw = W2 * 0.86, th = ph * 0.55;
+        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.fillRect(x, y, tw, th); ctx.globalAlpha = 0.9; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.1; ctx.strokeRect(x, y, tw, th);
+        ctx.beginPath(); ctx.moveTo(x, y + 14 * u); ctx.lineTo(x + tw, y + 14 * u); ctx.stroke();
+        [C.accent, C.ink3, C.ink3].forEach((c, i) => { ctx.fillStyle = c; ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.arc(x + (9 + i * 8) * u, y + 7 * u, 2.2 * u, 0, Math.PI * 2); ctx.fill(); });
+        ctx.lineWidth = 1.2 * u;
+        for (let i = 0; i < 4; i++) {
+          ctx.globalAlpha = 0.85; ctx.strokeStyle = i === 3 ? C.accent : C.ink2;
+          ctx.beginPath(); ctx.moveTo(x + 10 * u, y + (26 + i * 10) * u); ctx.lineTo(x + 14 * u, y + (26 + i * 10) * u); ctx.stroke();
+          ctx.globalAlpha = 0.45; ctx.strokeStyle = C.ink; const len = (tw - 34 * u) * (0.4 + rnd() * 0.6) * a;
+          ctx.beginPath(); ctx.moveTo(x + 20 * u, y + (26 + i * 10) * u); ctx.lineTo(x + 20 * u + len, y + (26 + i * 10) * u); ctx.stroke();
+        }
+        ctx.strokeStyle = C.accent; ctx.lineWidth = 1.1; ctx.globalAlpha = 0.9;
+        const sx = x + 10 * u, sw = tw - 20 * u, sy = y + th - 8 * u, n = 40, pts = [];
+        let v = 0.5; for (let i = 0; i <= n; i++) { v = clamp(v + (rnd() - 0.5) * 0.5, 0.05, 1); pts.push([sx + sw * i / n, sy - v * 22 * u]); }
+        ctx.beginPath(); polyPart(ctx, pts, k(0.2, 0.6)); ctx.stroke();
+        label(ctx, x + tw * 0.85, y + 4, 'PRODUCT · prod', 1, C.ink2, true, 16);
+      }
+      const gx0 = L[0] + pw + 10 * u, gx1 = R[0] - 10 * u, mid = (gx0 + gx1) / 2;
+      const curve = (x0, y0, x1, y1, lift, steps = 48) => Array.from({ length: steps + 1 }, (_, i) => { const t = i / steps; return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t - Math.sin(Math.PI * t) * lift]; });
+      const top = curve(gx0, cy - ph * 0.18, gx1, cy - ph * 0.18, 58 * u), bot = curve(gx1, cy + ph * 0.22, gx0, cy + ph * 0.22, -52 * u);
+      const draw = (pts, col, prog, gapAt) => {
+        if (prog <= 0) return;
+        ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.95; ctx.setLineDash([5, 4]);
+        const cut = Math.max(1, Math.floor((pts.length - 1) * Math.min(prog, gapAt)));
+        ctx.beginPath(); polyPart(ctx, pts.slice(0, cut + 1), 1); ctx.stroke(); ctx.setLineDash([]);
+        if (prog > gapAt) {
+          ctx.globalAlpha = 0.3; ctx.setLineDash([2, 5]); ctx.beginPath(); polyPart(ctx, pts.slice(cut), (prog - gapAt) / (1 - gapAt)); ctx.stroke(); ctx.setLineDash([]);
+          if (prog >= 1) { const e = pts[pts.length - 1]; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc(e[0], e[1], 3, 0, Math.PI * 2); ctx.stroke(); }
+        }
+        const head = pts[cut], prev = pts[cut - 1], ang = Math.atan2(head[1] - prev[1], head[0] - prev[0]);
+        ctx.globalAlpha = 1; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(head[0] + Math.cos(ang) * 5, head[1] + Math.sin(ang) * 5);
+        ctx.lineTo(head[0] + Math.cos(ang + 2.5) * 5, head[1] + Math.sin(ang + 2.5) * 5); ctx.lineTo(head[0] + Math.cos(ang - 2.5) * 5, head[1] + Math.sin(ang - 2.5) * 5); ctx.fill();
+      };
+      draw(top, C.blue, k(0.3, 0.85), 0.72);
+      draw(bot, C.accent, k(0.4, 0.95), 0.72);
+      ctx.globalAlpha = 0.7; ctx.strokeStyle = C.ink3; ctx.lineWidth = 0.8; ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(mid, cy - ph * 0.62); ctx.lineTo(mid, cy + ph * 0.62); ctx.stroke(); ctx.setLineDash([]);
+      if (!MINI && p > 0.6) {
+        ctx.globalAlpha = 1; ctx.fillStyle = C.paper; ctx.beginPath(); ctx.arc(mid, cy, 11 * u, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = C.ink2; ctx.stroke();
+        ctx.fillStyle = C.ink; ctx.font = `600 ${Math.round(12 * u)}px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', mid, cy + 0.5);
+      }
+      if (p > 0.85) {
+        label(ctx, top[24][0], top[24][1], "can't tell you", narrow ? -1 : 1, C.blue, true, 16);
+        label(ctx, bot[24][0], bot[24][1], "can't prove", -1, C.accent, true, -16);
+      }
+      ctx.globalAlpha = 1;
+    },
+
     // O — compound growth as coin stacks: paid-in (blue) vs growth (red), one drawdown.
     compound(ctx, w, h, p, rnd) {
       const Y = 40, step = 5, crashAt = 10 + 5 * Math.floor(rnd() * 3), stacks = [], years = [];
