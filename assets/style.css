@@ -1332,3 +1332,9 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 .status[data-tone="dim"] { color: var(--ink-3); } .status[data-tone="dim"] i { background: var(--ink-3); animation-duration: 4.5s; }
 .status.has-spin i { font-size: 1.35em; line-height: 1; text-transform: none; width: auto; min-width: 1.1em; height: auto; background: none !important; box-shadow: none; animation: none; font-style: normal; text-align: center; }
 .status.has-spin[data-night] i { min-width: 1.9em; text-align: left; }
+
+/* Publications: collapsed list shows only key papers */
+.pubs.is-collapsed li:not([data-key]) { display: none; }
+.pubs-toggle { display: inline-flex; align-items: center; gap: 8px; margin: 18px 0 0; padding: 8px 14px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); background: none; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; transition: color .2s, border-color .2s; }
+.pubs-toggle:hover { color: var(--ink); border-color: var(--ink-3); }
+.pubs-toggle[hidden] { display: none; }

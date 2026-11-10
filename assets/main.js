@@ -46,7 +46,28 @@
       b.setAttribute('aria-pressed', String(on));
     });
     pubs.forEach(li => { li.hidden = f === 'first' && !li.hasAttribute('data-first'); });
+    // "First author" shows its full (short) list; "All" goes back to the collapsed view.
+    if (pubList && toggle) { pubList.classList.toggle('is-collapsed', f === 'all' && !expanded); toggle.hidden = f !== 'all'; }
   }));
+
+  /* ── Publications: show key papers, expand for the full list ── */
+  const pubList = document.getElementById('pubs');
+  const toggle = document.querySelector('.pubs-toggle');
+  let expanded = false;
+  if (pubList && toggle && pubList.querySelector('[data-key]')) {
+    const total = pubs.length;
+    const label = () => {
+      toggle.innerHTML = expanded ? 'Show fewer <span aria-hidden="true">↑</span>' : `Show all ${total} papers <span aria-hidden="true">↓</span>`;
+      toggle.setAttribute('aria-expanded', String(expanded));
+    };
+    pubList.classList.add('is-collapsed'); toggle.hidden = false; label();
+    toggle.addEventListener('click', () => {
+      expanded = !expanded;
+      pubList.classList.toggle('is-collapsed', !expanded);
+      label();
+      if (!expanded) pubList.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
 
   /* ── Blog: copy link / copy code ───────────────────────── */
   const flash = (btn, text) => { const t = btn.textContent; btn.textContent = text; setTimeout(() => { btn.textContent = t; }, 1400); };
