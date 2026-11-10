@@ -948,9 +948,10 @@
     const mini = !!o.mini;
     const L = mini ? 12 : o.axis === false ? 24 : 66, R = w - (mini ? 12 : 18), T = mini ? 12 : 30, B = h - (mini ? 12 : 30);
     const n = stacks.length, colW = (R - L) / n;
-    const rx = Math.max(4, Math.min(26, colW * 0.36)), ry = rx * 0.34, th = Math.max(2.2, Math.min(5.2, rx * 0.24));
+    // o.big: chunkier coins (wider, thicker) and shorter towers (o.fill = share of the height used).
+    const rx = Math.max(4, Math.min(o.big ? 40 : 26, colW * (o.big ? 0.42 : 0.36))), ry = rx * 0.34, th = Math.max(2.2, Math.min(o.big ? 9 : 5.2, rx * (o.big ? 0.3 : 0.24)));
     const maxV = Math.max(1, ...stacks.map((s) => Math.max(s.value, s.paid)));
-    const capacity = Math.max(4, Math.floor((B - T - ry * 2 - 6) / th));
+    const capacity = Math.max(4, Math.floor(((B - T) * (o.fill || 1) - ry * 2 - 6) / th));
     const unit = maxV / capacity;
     const yOf = (v) => B - ry - (v / unit) * th;
     if (!mini && o.axis !== false) {
@@ -1377,7 +1378,7 @@
 
     // O — compound growth as coin stacks: paid-in (blue) vs growth (red), one drawdown.
     compound(ctx, w, h, p, rnd) {
-      const Y = 40, step = 4, crashAt = 12 + 4 * Math.floor(rnd() * 3), stacks = [];
+      const Y = 40, step = 5, crashAt = 10 + 5 * Math.floor(rnd() * 3), stacks = [];
       let v = 0, c = 0;
       for (let m = 1; m <= Y * 12; m++) {
         let r = 0.065 / 12 + (rnd() - 0.5) * 0.02;
@@ -1385,7 +1386,7 @@
         if (m === crashAt * 12) v *= 0.62;
         if (m % (step * 12) === 0) stacks.push({ t: m / 12, paid: c, value: v });
       }
-      const { geo } = drawCoinChart(ctx, w, h, stacks, { mini: MINI, progress: p, age: 25, axis: false });
+      const { geo } = drawCoinChart(ctx, w, h, stacks, { mini: MINI, progress: p, age: 25, axis: false, big: true, fill: 0.72 });
       if (p > 0.95 && !MINI) {
         const last = geo[geo.length - 1], ci = stacks.findIndex((q) => q.t === crashAt);
         label(ctx, last.cx, last.top, 'growth', -1, C.accent, true, 14);
