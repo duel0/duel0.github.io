@@ -711,9 +711,58 @@
     f.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.click(); } });
   };
 
+  // Hero status: cycles through verbs with a scramble; at night in Naples it is just sleeping.
+  const initStatus = () => {
+    const st = document.querySelector('.hero-meta .status');
+    if (!st) return;
+    const word = el('span', { class: 'status-word' });
+    word.textContent = st.lastChild.textContent.trim(); st.lastChild.remove(); st.append(word);
+    const VERBS = [
+      ['researching'], ['hacking', 'red'], ['pwning', 'red'], ['fuzzing'], ['reversing'], ['exploiting', 'red'],
+      ['defending', 'blue'], ['threat hunting', 'blue'], ['popping shells', 'red'], ['pivoting', 'red'], ['triaging', 'blue'],
+      ['training agents'], ['writing papers'], ['grading CTFs'], ['brewing espresso'], ['cheering for Napoli'], ['reading logs', 'blue'],
+    ];
+    const hourInNaples = () => Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(new Date()));
+    const GLYPHS = '!<>-_/[]{}=+*^?#$%&01abcdef';
+    const set = (text, tone) => {
+      st.dataset.tone = tone || '';
+      if (reduceMotion) { word.textContent = text; return; }
+      const from = word.textContent, len = Math.max(from.length, text.length), t0 = performance.now(), dur = 420 + len * 14;
+      const step = (now) => {
+        const k = Math.min(1, (now - t0) / dur);
+        let out = '';
+        for (let i = 0; i < len; i++) {
+          const at = (i / len) * 0.6 + 0.4;
+          if (k >= at) out += text[i] || '';
+          else if (k >= at - 0.4) out += text[i] === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+          else out += from[i] || '';
+        }
+        word.textContent = out;
+        if (k < 1) requestAnimationFrame(step); else word.textContent = text;
+      };
+      requestAnimationFrame(step);
+    };
+    let i = 0, timer;
+    const tick = () => {
+      const h = hourInNaples();
+      if (h >= 2 && h < 7) { st.dataset.night = ''; if (word.textContent !== 'sleeping') set('sleeping', 'dim'); }
+      else {
+        delete st.dataset.night;
+        i = (i + 1 + Math.floor(Math.random() * 2)) % VERBS.length;
+        set(...VERBS[i]);
+      }
+      timer = setTimeout(tick, 3200);
+    };
+    document.addEventListener('visibilitychange', () => { clearTimeout(timer); if (!document.hidden) timer = setTimeout(tick, 1200); });
+    const h = hourInNaples();
+    if (h >= 2 && h < 7) { st.dataset.night = ''; word.textContent = 'sleeping'; st.dataset.tone = 'dim'; }
+    timer = setTimeout(tick, 2600);
+  };
+
   const boot = () => {
     initAttackPath();
     initFetch();
+    initStatus();
     initDecrypt();
     initReticle();
     initConsole();

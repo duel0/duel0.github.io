@@ -1323,3 +1323,10 @@ body.console-open .term-fab { opacity: 0; pointer-events: none; transform: trans
 /* About: organisation links read as highlighted names, underline on hover */
 .about-text a { color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in oklab, var(--accent) 55%, transparent); text-underline-offset: 3px; }
 .about-text a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* hero status verbs */
+.status-word { white-space: pre; }
+.status, .status i { transition: color .4s ease, background-color .4s ease; }
+.status[data-tone="red"] { color: var(--accent); } .status[data-tone="red"] i { background: var(--accent); }
+.status[data-tone="blue"] { color: var(--blue); } .status[data-tone="blue"] i { background: var(--blue); }
+.status[data-tone="dim"] { color: var(--ink-3); } .status[data-tone="dim"] i { background: var(--ink-3); animation-duration: 4.5s; }
